@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="InquiCheck">
-    <title>InquiCheck v12 | Pasaporte Oficial de Solvencia</title>
+    <title>InquiCheck v13 | Pasaporte Oficial de Solvencia</title>
     
     <!-- PWA Manifest e Icono Oficial Vectorial -->
     <link rel="manifest" href="manifest.json">
@@ -20,7 +20,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #f8fafc; 
+            color: #0f172a;
+            -webkit-font-smoothing: antialiased;
+        }
         .verified-pulse { animation: pulse-green 2s infinite; }
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
@@ -35,66 +40,66 @@
         }
     </style>
 </head>
-<body class="text-slate-800 pb-10 flex flex-col min-h-screen">
+<body class="pb-12 flex flex-col min-h-screen">
 
     <!-- ==========================================
-         BARRA DE NAVEGACIÓN SUPERIOR (CON "VER PASAPORTE" EN EL CENTRO COMO ZONA COMÚN)
+         BARRA DE NAVEGACIÓN SUPERIOR (DISEÑO PROFESIONAL Y TEXTO MÁS LEGIBLE)
          ========================================== -->
-    <div id="admin-navbar" class="bg-slate-900 text-white pt-2 pb-2.5 px-2 sticky top-0 z-40 shadow-lg border-b border-slate-800">
-        <div class="max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-2 px-1">
+    <div id="admin-navbar" class="bg-slate-900 text-white pt-3 pb-3 px-3 sticky top-0 z-40 shadow-md border-b border-slate-800">
+        <div class="max-w-lg mx-auto">
+            <div class="flex justify-between items-center mb-2.5 px-1">
                 <!-- 5 clics en el logo abren el ajuste oculto de administrador -->
-                <span onclick="handleSecretAdminClick()" class="font-black text-emerald-400 flex items-center text-sm tracking-tight cursor-pointer select-none">
-                    <i class="fa-solid fa-shield-halved mr-1.5"></i>InquiCheck <span class="text-[10px] bg-slate-800 text-emerald-300 px-1.5 py-0.5 rounded ml-1.5 font-mono">v12</span>
+                <span onclick="handleSecretAdminClick()" class="font-extrabold text-white flex items-center text-base tracking-tight cursor-pointer select-none">
+                    <i class="fa-solid fa-shield-halved text-emerald-400 mr-2 text-lg"></i>InquiCheck 
+                    <span class="text-xs bg-slate-800 text-emerald-300 px-2 py-0.5 rounded-md ml-2 font-mono border border-slate-700">v13</span>
                 </span>
                 
-                <div class="flex items-center space-x-1.5">
-                    <!-- Botón de Instalar App (PWA) -->
-                    <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow transition flex items-center">
-                        <i class="fa-solid fa-download mr-1"></i>Instalar App
+                <div class="flex items-center space-x-2">
+                    <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center">
+                        <i class="fa-solid fa-download mr-1.5"></i>Instalar App
                     </button>
-                    <div id="connection-indicator" class="flex items-center space-x-1.5 bg-slate-800/90 border border-slate-700 px-2.5 py-0.5 rounded-full text-[10px]">
+                    <div id="connection-indicator" class="flex items-center space-x-2 bg-slate-800 border border-slate-700 px-3 py-1 rounded-full text-xs">
                         <span id="conn-dot" class="w-2 h-2 rounded-full bg-emerald-400 verified-pulse"></span>
-                        <span id="conn-text" class="text-emerald-300 font-semibold">Cloud Activo</span>
+                        <span id="conn-text" class="text-slate-200 font-medium">Auditoría Activa</span>
                     </div>
                 </div>
             </div>
 
-            <!-- NAVEGACIÓN EN 3 BLOQUES: INQUILINOS (IZQ) | VER PASAPORTE (CENTRO COMÚN) | PROPIETARIOS (DER) -->
-            <div class="grid grid-cols-12 gap-1.5 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 items-stretch">
+            <!-- NAVEGACIÓN EN 3 BLOQUES CLAROS -->
+            <div class="grid grid-cols-12 gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 items-stretch">
                 
                 <!-- Izquierda: Área Inquilinos (5 columnas) -->
-                <div class="col-span-5 bg-slate-900/90 p-1 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-                    <span class="block text-[8px] font-extrabold uppercase tracking-wider text-emerald-400 text-center mb-1">
-                        <i class="fa-solid fa-user-check mr-0.5"></i>Inquilinos
+                <div class="col-span-5 bg-slate-900 p-1.5 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 text-center mb-1">
+                        <i class="fa-solid fa-user-check mr-1"></i>Inquilinos
                     </span>
                     <div class="grid grid-cols-2 gap-1">
-                        <button onclick="switchView('tenant')" id="btn-tenant" class="py-1.5 px-1 rounded-lg bg-emerald-600 text-white font-bold transition text-[10px] text-center shadow">
+                        <button onclick="switchView('tenant')" id="btn-tenant" class="py-2 px-1.5 rounded-lg bg-emerald-600 text-white font-bold transition text-xs text-center shadow">
                             Crear
                         </button>
-                        <button onclick="switchView('inbox')" id="btn-inbox" class="py-1.5 px-1 rounded-lg text-slate-300 hover:text-white font-bold transition text-[10px] text-center">
+                        <button onclick="switchView('inbox')" id="btn-inbox" class="py-2 px-1.5 rounded-lg text-slate-300 hover:text-white font-semibold transition text-xs text-center">
                             Buzón
                         </button>
                     </div>
                 </div>
 
                 <!-- Centro: ZONA COMÚN - VER PASAPORTE (4 columnas) -->
-                <div class="col-span-4 bg-slate-900/90 p-1 rounded-xl border border-amber-500/30 flex flex-col justify-between">
-                    <span class="block text-[8px] font-extrabold uppercase tracking-wider text-amber-300 text-center mb-1">
-                        <i class="fa-solid fa-id-card mr-0.5"></i>Común
+                <div class="col-span-4 bg-slate-900 p-1.5 rounded-xl border border-amber-500/30 flex flex-col justify-between">
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-300 text-center mb-1">
+                        <i class="fa-solid fa-id-card mr-1"></i>Común
                     </span>
-                    <button onclick="switchView('landlord')" id="btn-landlord" class="w-full py-1.5 px-1 rounded-lg text-slate-200 hover:text-white font-extrabold transition text-[10px] text-center flex items-center justify-center space-x-1">
-                        <i class="fa-solid fa-certificate text-amber-400 text-[9px]"></i>
+                    <button onclick="switchView('landlord')" id="btn-landlord" class="w-full py-2 px-2 rounded-lg text-slate-200 hover:text-white font-bold transition text-xs text-center flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-certificate text-amber-400 text-xs"></i>
                         <span>Pasaporte</span>
                     </button>
                 </div>
 
                 <!-- Derecha: Área Propietarios (3 columnas) -->
-                <div class="col-span-3 bg-slate-900/90 p-1 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-                    <span class="block text-[8px] font-extrabold uppercase tracking-wider text-indigo-400 text-center mb-1">
-                        <i class="fa-solid fa-building-user mr-0.5"></i>Caseros
+                <div class="col-span-3 bg-slate-900 p-1.5 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-indigo-300 text-center mb-1">
+                        <i class="fa-solid fa-building-user mr-1"></i>Caseros
                     </span>
-                    <button onclick="switchView('directory')" id="btn-directory" class="w-full py-1.5 px-1 rounded-lg text-slate-300 hover:text-white font-bold transition text-[10px] text-center">
+                    <button onclick="switchView('directory')" id="btn-directory" class="w-full py-2 px-1.5 rounded-lg text-slate-300 hover:text-white font-semibold transition text-xs text-center">
                         Catálogo
                     </button>
                 </div>
@@ -107,62 +112,64 @@
         <!-- ==========================================
              VISTA 1 (POR DEFECTO AL ENTRAR): CREAR PASAPORTE MULTI-TITULAR
              ========================================== -->
-        <div id="view-tenant" class="max-w-md mx-auto mt-3 px-3">
-            <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-5 space-y-4">
+        <div id="view-tenant" class="max-w-lg mx-auto mt-4 px-3.5">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-5">
                 
-                <div class="border-b border-slate-100 pb-3">
-                    <div class="flex justify-between items-center">
-                        <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
-                            <i class="fa-solid fa-user-check mr-1"></i>Área Exclusiva Inquilinos
+                <div class="border-b border-slate-100 pb-4">
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full">
+                            <i class="fa-solid fa-user-check mr-1"></i>Área de Inquilinos
                         </span>
-                        <button onclick="openPrivacyModal()" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center">
-                            <i class="fa-solid fa-scale-balanced mr-1"></i>¿Cómo protegemos tus archivos?
+                        <button onclick="openPrivacyModal()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center">
+                            <i class="fa-solid fa-scale-balanced mr-1.5"></i>Garantía Legal RGPD
                         </button>
                     </div>
-                    <h2 class="text-lg font-extrabold text-slate-900 mt-2">Crea tu Pasaporte de Solvencia</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Individual o conjunto (parejas, amigos o familiares). Demuestra vuestra solvencia y ocupación laboral sin enviar copias de DNI ni nóminas a desconocidos.</p>
+                    <h2 class="text-xl font-extrabold text-slate-900 mt-3">Crear Pasaporte de Solvencia</h2>
+                    <p class="text-sm text-slate-600 mt-1 leading-relaxed">
+                        Acredita tus ingresos y estabilidad laboral (individual o en pareja/grupo) con validez oficial y sin entregar copias de tu DNI ni tus nóminas a desconocidos.
+                    </p>
                 </div>
 
                 <!-- BLOQUE DESTACADO DE TRANSPARENCIA Y PROTECCIÓN DE DATOS -->
-                <div onclick="openPrivacyModal()" class="bg-emerald-50/90 hover:bg-emerald-100/80 border border-emerald-200 p-3.5 rounded-2xl cursor-pointer transition flex items-start space-x-3">
-                    <div class="bg-emerald-600 text-white w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                        <i class="fa-solid fa-user-lock text-sm"></i>
+                <div onclick="openPrivacyModal()" class="bg-emerald-50/70 hover:bg-emerald-50 border border-emerald-200 p-4 rounded-xl cursor-pointer transition flex items-start space-x-3.5">
+                    <div class="bg-emerald-600 text-white w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                        <i class="fa-solid fa-user-lock text-base"></i>
                     </div>
-                    <div class="text-xs">
-                        <span class="font-extrabold text-emerald-950 block">Protocolo de Destrucción Inmediata (RAM)</span>
-                        <p class="text-[11px] text-emerald-800 mt-0.5 leading-relaxed">
-                            Tus PDFs <strong>jamás se guardan en ningún disco duro ni servidor</strong>. Se leen en memoria volátil durante 5 segundos para validar el código CSV y sumar vuestros ingresos, y se destruyen automáticamente. <span class="underline font-bold">Leer certificado digital completo →</span>
+                    <div class="text-xs sm:text-sm">
+                        <span class="font-bold text-emerald-950 block">Protocolo de Custodia Cero y Ocultación de DNI</span>
+                        <p class="text-xs text-emerald-900 mt-1 leading-relaxed">
+                            Tus PDFs <strong>no se almacenan en ningún servidor</strong>. Se analizan en memoria RAM volátil durante 5 segundos y se destruyen automáticamente. Nuestro cortafuegos bloquea cualquier publicación de tu DNI, NIE o cuenta bancaria. <span class="underline font-bold">Ver certificado legal →</span>
                         </p>
                     </div>
                 </div>
 
                 <!-- Paso 1: Zona y WhatsApp privado -->
-                <div class="grid grid-cols-1 gap-3">
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">1. ¿En qué municipio o barrio buscáis piso?</label>
+                        <label class="block text-sm font-bold text-slate-800 mb-1.5">1. ¿En qué municipio o zona buscáis vivienda?</label>
                         <input type="text" id="tenant-zone-input" placeholder="Ej: Valdemoro / Madrid Sur / Alcázar" value="Valdemoro / Madrid Sur" 
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-semibold text-slate-800">
+                            class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium text-slate-900 focus:bg-white focus:outline-none focus:border-emerald-600">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">
-                            2. WhatsApp del representante para avisos <span class="text-[10px] font-normal text-emerald-700">(Oculto en el catálogo público)</span>
+                        <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                            2. WhatsApp para avisos de propietarios <span class="text-xs font-normal text-emerald-700">(Privado y oculto en el catálogo)</span>
                         </label>
-                        <input type="tel" id="tenant-phone-input" placeholder="Ej: 600123456" 
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-semibold text-slate-800">
+                        <input type="tel" id="tenant-phone-input" placeholder="Ej: 600 123 456" 
+                            class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium text-slate-900 focus:bg-white focus:outline-none focus:border-emerald-600">
                     </div>
                 </div>
 
                 <!-- Paso 2: Número de Titulares con Ingresos y Relación / Parentesco -->
-                <div class="bg-indigo-50/60 border border-indigo-200/80 p-3.5 rounded-2xl space-y-3">
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold text-indigo-950"><i class="fa-solid fa-users text-indigo-600 mr-1.5"></i>3. Titulares Firmantes del Contrato</span>
-                        <span class="text-[10px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">Desglose por Persona</span>
+                        <span class="text-sm font-bold text-slate-900"><i class="fa-solid fa-users text-indigo-600 mr-1.5"></i>3. Titulares que firmarán el contrato</span>
+                        <span class="text-xs bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold px-2.5 py-0.5 rounded-md">Suma de Ingresos</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-2.5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-600 mb-1">Nº Personas con Ingresos</label>
+                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nº Personas con Ingresos</label>
                             <select id="num-applicants-select" onchange="handleApplicantsChange()" 
-                                class="w-full bg-white border border-indigo-200 rounded-xl p-2 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
+                                class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-indigo-500">
                                 <option value="1">1 Titular (Individual)</option>
                                 <option value="2" selected>2 Titulares (Pareja / Dos firmantes)</option>
                                 <option value="3">3 Titulares Firmantes</option>
@@ -170,9 +177,9 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-600 mb-1">Relación o Parentesco</label>
+                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Relación o Vínculo</label>
                             <select id="relationship-select" 
-                                class="w-full bg-white border border-indigo-200 rounded-xl p-2 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
+                                class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-indigo-500">
                                 <option value="Individual">Único titular (Individual)</option>
                                 <option value="Matrimonio / Pareja" selected>Matrimonio / Pareja</option>
                                 <option value="Amigos / Compañeros">Amigos / Compañeros de piso</option>
@@ -183,51 +190,51 @@
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE AYUDA PARA DESCARGAR LA VIDA LABORAL EN LA SEGURIDAD SOCIAL -->
-                    <div class="bg-white border border-indigo-200/90 p-2.5 rounded-xl flex items-center justify-between">
-                        <div class="text-[11px] text-slate-700 leading-tight pr-2">
-                            <i class="fa-solid fa-circle-question text-indigo-600 mr-1"></i>¿No tienes el PDF de tu <strong>Vida Laboral</strong> a mano?
+                    <!-- BOTÓN DE AYUDA PARA DESCARGAR LA VIDA LABORAL -->
+                    <div class="bg-white border border-slate-200 p-3 rounded-xl flex items-center justify-between gap-2">
+                        <div class="text-xs text-slate-700 leading-snug">
+                            <i class="fa-solid fa-circle-info text-indigo-600 mr-1"></i>¿No tienes el PDF de tu <strong>Vida Laboral</strong>?
                         </div>
-                        <button type="button" onclick="openVidaLaboralModal()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-900 font-extrabold text-[10px] px-2.5 py-1.5 rounded-lg shrink-0 transition">
-                            Cómo solicitarla en 1 min →
+                        <button type="button" onclick="openVidaLaboralModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-bold text-xs px-3 py-1.5 rounded-lg shrink-0 transition">
+                            Solicitar en la Seg. Social →
                         </button>
                     </div>
                 </div>
 
                 <!-- Contenedor Dinámico de Subida de PDFs + Ocupación de cada Titular -->
-                <div id="dynamic-applicants-docs" class="space-y-3"></div>
+                <div id="dynamic-applicants-docs" class="space-y-4"></div>
 
                 <!-- CASILLA DE CONSENTIMIENTO EXPLÍCITO RGPD -->
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
-                    <label class="flex items-start space-x-2.5 cursor-pointer">
-                        <input type="checkbox" id="rgpd-consent-check" checked class="mt-0.5 w-4 h-4 accent-emerald-600 rounded">
-                        <span class="text-[11px] text-slate-600 leading-tight">
-                            <strong>Consentimiento Explícito (Art. 6.1.a RGPD):</strong> Autorizo la lectura automatizada en memoria volátil de los documentos aportados (con la conformidad de todos los titulares incluidos) para emitir el certificado anonimizado de solvencia, entendiendo que los PDFs originales se destruyen en el acto.
-                            <button type="button" onclick="openPrivacyModal()" class="text-emerald-700 font-bold underline ml-0.5">Ver cláusula legal.</button>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <label class="flex items-start space-x-3 cursor-pointer">
+                        <input type="checkbox" id="rgpd-consent-check" checked class="mt-1 w-4 h-4 accent-emerald-600 rounded">
+                        <span class="text-xs text-slate-600 leading-relaxed">
+                            <strong class="text-slate-800">Consentimiento Explícito (Art. 6.1.a RGPD):</strong> Autorizo el análisis automatizado en memoria volátil de los documentos aportados para emitir el certificado anonimizado de solvencia, confirmando que los datos son veraces y que los archivos se destruyen en el acto.
+                            <button type="button" onclick="openPrivacyModal()" class="text-emerald-700 font-bold underline ml-1">Ver cláusula legal.</button>
                         </span>
                     </label>
                 </div>
 
                 <!-- Explicación Gratis vs PRO -->
-                <div class="bg-indigo-50/70 border border-indigo-200/80 p-3 rounded-2xl flex items-center justify-between text-xs">
+                <div class="bg-indigo-50/70 border border-indigo-200 p-3.5 rounded-xl flex items-center justify-between text-xs">
                     <div>
-                        <span class="font-bold text-indigo-950 block"><i class="fa-solid fa-gift text-indigo-600 mr-1"></i>Promoción Lanzamiento: PRO Gratis</span>
-                        <span class="text-[11px] text-indigo-800">Genera tu pasaporte y activa todas las funciones PRO gratis por tiempo limitado.</span>
+                        <span class="font-bold text-indigo-950 text-sm block"><i class="fa-solid fa-gift text-indigo-600 mr-1.5"></i>Promoción Lanzamiento: PRO Gratis</span>
+                        <span class="text-xs text-indigo-900">Emite tu pasaporte y activa todas las funciones PRO gratis por tiempo limitado.</span>
                     </div>
-                    <button type="button" onclick="openProModal()" class="text-[11px] font-extrabold text-indigo-700 underline shrink-0 ml-2">Gratis vs PRO</button>
+                    <button type="button" onclick="openProModal()" class="text-xs font-bold text-indigo-700 underline shrink-0 ml-3">Gratis vs PRO</button>
                 </div>
 
                 <!-- Consola de estado -->
-                <div id="audit-console" class="hidden bg-slate-900 text-emerald-400 p-3.5 rounded-2xl text-xs font-mono space-y-1.5">
-                    <div id="log-1"><i id="log-spinner" class="fa-solid fa-spinner fa-spin mr-1.5"></i><span id="log-1-text">Procesando PDFs en memoria RAM...</span></div>
+                <div id="audit-console" class="hidden bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs font-mono space-y-2">
+                    <div id="log-1"><i id="log-spinner" class="fa-solid fa-spinner fa-spin mr-2"></i><span id="log-1-text">Procesando documentos en memoria RAM...</span></div>
                     <div id="log-2" class="hidden text-slate-300"></div>
                     <div id="log-3" class="hidden text-emerald-300"></div>
                 </div>
 
                 <!-- Botón Principal -->
-                <button id="btn-submit-audit" onclick="runFullAuditAndSave()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition flex items-center justify-center space-x-2 text-sm">
-                    <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i>
-                    <span>Auditar Expediente y Generar Pasaporte</span>
+                <button id="btn-submit-audit" onclick="runFullAuditAndSave()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-5 rounded-xl shadow-md transition flex items-center justify-center space-x-2.5 text-base">
+                    <i class="fa-solid fa-shield-check text-emerald-400"></i>
+                    <span>Auditar Documentos y Generar Pasaporte</span>
                 </button>
             </div>
         </div>
@@ -235,227 +242,229 @@
         <!-- ==========================================
              VISTA CENTRAL COMÚN: CERTIFICADO DEL CANDIDATO (PASAPORTE)
              ========================================== -->
-        <div id="view-landlord" class="max-w-md mx-auto mt-3 px-3 print-container hidden">
+        <div id="view-landlord" class="max-w-lg mx-auto mt-4 px-3.5 print-container hidden">
             
             <!-- AVISO CUANDO SE ESTÁ VIENDO EL PASAPORTE DE EJEMPLO -->
-            <div id="example-warning-banner" class="bg-amber-100 border-2 border-amber-400 text-amber-950 p-3 rounded-2xl mb-3 shadow-sm flex items-center justify-between no-print">
-                <div class="text-xs pr-2">
-                    <span class="font-black uppercase text-[10px] bg-amber-400 text-slate-950 px-2 py-0.5 rounded mr-1">Modo Vista Previa</span>
-                    <p class="font-semibold mt-1 leading-tight">Este es un <strong>Pasaporte de Ejemplo</strong> para que veas el formato. Crea el tuyo en el botón "Crear".</p>
+            <div id="example-warning-banner" class="bg-amber-50 border border-amber-300 text-amber-950 p-4 rounded-xl mb-3.5 shadow-sm flex items-center justify-between no-print">
+                <div class="text-xs sm:text-sm pr-3">
+                    <span class="font-bold uppercase text-[11px] bg-amber-300/80 text-slate-900 px-2 py-0.5 rounded mr-1">Vista de Demostración</span>
+                    <p class="font-medium mt-1 leading-snug">Estás viendo un <strong>Pasaporte de Ejemplo</strong>. Pulsa en "Crear" para generar el tuyo con tus documentos.</p>
                 </div>
-                <button onclick="switchView('tenant')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] px-3 py-2 rounded-xl shrink-0 transition">
+                <button onclick="switchView('tenant')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shrink-0 transition">
                     Crear el mío →
                 </button>
             </div>
 
             <!-- Panel de Control del Inquilino sobre su Pasaporte (Gratis vs PRO) -->
-            <div id="share-banner" class="bg-indigo-950 border border-indigo-700 text-white p-4 rounded-2xl mb-3 shadow-md space-y-3">
+            <div id="share-banner" class="bg-slate-900 border border-slate-700 text-white p-4 rounded-2xl mb-4 shadow-md space-y-3.5">
                 <div class="flex justify-between items-center">
-                    <span id="plan-badge-top" class="text-[10px] font-black uppercase tracking-wider bg-slate-800 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full">
-                        <i class="fa-solid fa-lock mr-1"></i>Versión Gratuita (Funciones Limitadas)
+                    <span id="plan-badge-top" class="text-xs font-bold uppercase tracking-wide bg-slate-800 text-amber-300 border border-amber-400/40 px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-lock mr-1.5"></i>Versión Gratuita
                     </span>
-                    <button onclick="openProModal()" class="text-[11px] text-indigo-200 underline hover:text-white font-semibold">
-                        ¿Qué incluye PRO?
+                    <button onclick="openProModal()" class="text-xs text-slate-300 underline hover:text-white font-medium">
+                        Ver ventajas PRO
                     </button>
                 </div>
 
-                <!-- Input oculto para almacenar la URL internamente sin mostrarla escrita -->
+                <!-- Input oculto para almacenar la URL internamente -->
                 <input type="hidden" id="share-url-input" value="">
 
                 <div class="relative">
-                    <div id="share-controls-wrapper" class="grid grid-cols-2 gap-2 blur-lock">
-                        <button onclick="handleProAction('copy')" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow">
+                    <div id="share-controls-wrapper" class="grid grid-cols-2 gap-2.5 blur-lock">
+                        <button onclick="handleProAction('copy')" class="bg-indigo-600 hover:bg-indigo-500 text-white py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-2 shadow">
                             <i class="fa-regular fa-copy"></i>
                             <span>Copiar enlace a pasaporte</span>
                         </button>
-                        <button onclick="handleProAction('whatsapp')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow">
-                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <button onclick="handleProAction('whatsapp')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-2 shadow">
+                            <i class="fa-brands fa-whatsapp text-base"></i>
                             <span>Enviar por WhatsApp</span>
                         </button>
                     </div>
 
-                    <div id="free-lock-overlay" onclick="openProModal()" class="absolute inset-0 bg-indigo-950/85 backdrop-blur-[2px] rounded-xl border border-amber-400/50 flex items-center justify-between px-3 cursor-pointer hover:bg-indigo-900/80 transition">
-                        <span class="text-xs font-bold text-amber-300 flex items-center">
-                            <i class="fa-solid fa-crown mr-2 text-sm"></i>Copiar Enlace y WhatsApp (Opción PRO)
+                    <div id="free-lock-overlay" onclick="openProModal()" class="absolute inset-0 bg-slate-900/90 backdrop-blur-[2px] rounded-xl border border-amber-400/50 flex items-center justify-between px-3.5 cursor-pointer hover:bg-slate-800/90 transition">
+                        <span class="text-xs sm:text-sm font-bold text-amber-300 flex items-center">
+                            <i class="fa-solid fa-crown mr-2"></i>Enlace Idealista y WhatsApp (PRO)
                         </span>
-                        <span class="bg-amber-400 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-lg uppercase">Desbloquear</span>
+                        <span class="bg-amber-400 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-lg">Desbloquear</span>
                     </div>
                 </div>
 
-                <div id="upgrade-cta-bar" class="pt-2 border-t border-indigo-900/80 flex items-center justify-between">
-                    <div class="text-[11px] text-indigo-200 leading-tight pr-2">
-                        Desbloquea el QR, PDF, enlace para Idealista y contacto de propietarios:
+                <div id="upgrade-cta-bar" class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                    <div class="text-xs text-slate-300 leading-snug">
+                        Habilita el QR, descarga en PDF y contacto de propietarios:
                     </div>
-                    <button onclick="activateProDirectly()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[11px] px-3 py-2 rounded-xl shadow-md shrink-0 transition flex items-center">
-                        <i class="fa-solid fa-bolt mr-1"></i>Activar PRO (GRATIS por tiempo limitado)
+                    <button onclick="activateProDirectly()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow shrink-0 transition flex items-center">
+                        <i class="fa-solid fa-bolt mr-1.5"></i>Activar PRO (GRATIS por tiempo limitado)
                     </button>
                 </div>
             </div>
 
-            <!-- Cabecera Oficial del Certificado -->
-            <div class="bg-emerald-950 text-white rounded-t-3xl p-5 relative overflow-hidden shadow-lg">
-                <div class="flex justify-between items-start">
+            <!-- Cabecera Oficial del Certificado (Cambia a Ámbar/Rojo si hay discrepancia documental) -->
+            <div id="cert-header-box" class="bg-emerald-950 text-white rounded-t-2xl p-5 sm:p-6 relative overflow-hidden shadow-md transition-colors">
+                <div class="flex justify-between items-start gap-3">
                     <div>
-                        <div class="inline-flex items-center space-x-1.5 bg-emerald-800/80 border border-emerald-500/40 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-200 mb-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 verified-pulse"></span>
+                        <div id="ui-header-pill-box" class="inline-flex items-center space-x-2 bg-emerald-800/80 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-semibold text-emerald-200 mb-2.5">
+                            <span id="ui-header-dot" class="w-2 h-2 rounded-full bg-emerald-400 verified-pulse"></span>
                             <span id="ui-header-pill-text">EJEMPLO DE AUDITORÍA IA + CSV</span>
                         </div>
-                        <h1 class="text-xl font-extrabold tracking-tight flex items-center">
+                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center">
                             Pasaporte de Solvencia
-                            <span id="cert-pro-pill" class="hidden ml-2 bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">PRO</span>
+                            <span id="cert-pro-pill" class="hidden ml-2.5 bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-md uppercase">PRO</span>
                         </h1>
-                        <p class="text-xs text-emerald-300 mt-0.5">ID: <span id="ui-cert-id" class="font-mono font-bold">#IC-DEMO01</span> • RGPD Art. 5.1.c</p>
+                        <p class="text-xs sm:text-sm text-emerald-200/90 mt-1">
+                            ID: <span id="ui-cert-id" class="font-mono font-bold text-white">#IC-DEMO01</span> • Protegido RGPD Art. 5.1.c (DNI Oculto)
+                        </p>
                     </div>
 
                     <!-- Código QR -->
-                    <div class="relative bg-white p-1.5 rounded-xl shadow-inner cursor-pointer" onclick="if(!isProActive) openProModal()">
-                        <img id="ui-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://inquicheck.es" alt="QR" class="w-12 h-12 rounded blur-lock">
-                        <div id="qr-lock-badge" class="absolute inset-0 bg-slate-900/70 rounded-xl flex flex-col items-center justify-center text-amber-400">
-                            <i class="fa-solid fa-lock text-xs"></i>
-                            <span class="text-[8px] font-black uppercase mt-0.5">PRO</span>
+                    <div class="relative bg-white p-2 rounded-xl shadow-sm shrink-0 cursor-pointer" onclick="if(!isProActive) openProModal()">
+                        <img id="ui-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=https://inquicheck.vercel.app" alt="QR" class="w-14 h-14 rounded blur-lock">
+                        <div id="qr-lock-badge" class="absolute inset-0 bg-slate-900/75 rounded-xl flex flex-col items-center justify-center text-amber-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                            <span class="text-[10px] font-black uppercase mt-0.5">PRO</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Cuerpo del Certificado -->
-            <div class="bg-white rounded-b-3xl shadow-xl border border-slate-200/80 p-5 space-y-5">
+            <div class="bg-white rounded-b-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
                 
                 <!-- Perfil, Parentesco/Titulares y Scoring -->
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div class="flex items-center space-x-3.5">
-                        <div id="ui-initials" class="w-14 h-14 rounded-2xl bg-slate-100 border-2 border-emerald-500 flex items-center justify-center text-xl font-black text-slate-700 shrink-0">
+                <div class="flex items-start justify-between border-b border-slate-100 pb-5 gap-3">
+                    <div class="flex items-start space-x-3.5">
+                        <div id="ui-initials" class="w-14 h-14 rounded-2xl bg-slate-100 border-2 border-emerald-600 flex items-center justify-center text-xl font-black text-slate-800 shrink-0 mt-0.5">
                             EJ
                         </div>
                         <div>
-                            <h2 id="ui-alias" class="font-extrabold text-base text-slate-900 leading-tight">Candidato Ejemplo (Vista Previa)</h2>
-                            <div class="flex flex-wrap items-center gap-1 mt-1">
-                                <span id="ui-applicants-badge" class="bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md">
+                            <h2 id="ui-alias" class="font-extrabold text-lg text-slate-900 leading-snug">Candidato Ejemplo (Vista Previa)</h2>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                <span id="ui-applicants-badge" class="bg-indigo-50 text-indigo-800 border border-indigo-200 text-xs font-bold px-2.5 py-0.5 rounded-md">
                                     <i class="fa-solid fa-users mr-1"></i>2 Titulares Firmantes
                                 </span>
-                                <span id="ui-relationship-badge" class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-200">
+                                <span id="ui-relationship-badge" class="bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-0.5 rounded-md border border-slate-200">
                                     Matrimonio / Pareja
                                 </span>
                             </div>
-                            <p id="ui-zone" class="text-xs text-slate-500 font-medium mt-1"><i class="fa-solid fa-location-dot mr-1 text-emerald-600"></i>Busca en: Municipio de Ejemplo</p>
-                            <button onclick="openPrivacyModal()" class="text-[11px] font-semibold text-emerald-700 hover:underline mt-0.5 flex items-center no-print">
-                                <i class="fa-solid fa-user-shield mr-1"></i>Ver Garantía Legal RGPD y Custodia Cero
+                            <p id="ui-zone" class="text-xs sm:text-sm text-slate-600 font-medium mt-2">
+                                <i class="fa-solid fa-location-dot mr-1 text-emerald-600"></i>Busca en: Municipio de Ejemplo
+                            </p>
+                            <button onclick="openPrivacyModal()" class="text-xs font-semibold text-emerald-700 hover:underline mt-1.5 flex items-center no-print">
+                                <i class="fa-solid fa-user-shield mr-1"></i>Identidad protegida según RGPD (Ver Garantía)
                             </button>
                         </div>
                     </div>
-                    <div class="text-right bg-emerald-50 px-3 py-2 rounded-2xl border border-emerald-200 shrink-0">
-                        <span class="block text-[10px] font-bold uppercase text-emerald-700">Scoring</span>
-                        <span id="ui-score" class="text-2xl font-black text-emerald-600">96</span><span class="text-xs text-emerald-700 font-bold">/100</span>
+                    <div id="ui-score-box" class="text-right bg-emerald-50 px-4 py-2.5 rounded-2xl border border-emerald-200 shrink-0">
+                        <span id="ui-score-label" class="block text-[11px] font-bold uppercase text-emerald-800">Scoring</span>
+                        <span id="ui-score" class="text-3xl font-black text-emerald-600">96</span><span class="text-xs text-emerald-800 font-bold">/100</span>
                     </div>
                 </div>
 
                 <!-- DESGLOSE DE OCUPACIÓN Y CATEGORÍA LABORAL DE CADA TITULAR -->
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
-                            <i class="fa-solid fa-id-card-clip text-indigo-600 mr-1"></i>Ocupación y Categoría por Titular Firmante
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/90 space-y-2.5">
+                    <div class="flex justify-between items-center flex-wrap gap-1">
+                        <span class="text-xs font-bold uppercase tracking-wide text-slate-600">
+                            <i class="fa-solid fa-id-card-clip text-indigo-600 mr-1.5"></i>Ocupación y Categoría por Titular
                         </span>
-                        <span id="ui-seniority" class="text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded">Antigüedad máx: 8.0 años</span>
+                        <span id="ui-seniority" class="text-xs font-bold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-md">Antigüedad máx: 8.0 años</span>
                     </div>
-                    <div id="ui-members-breakdown" class="space-y-1.5 pt-1"></div>
+                    <div id="ui-members-breakdown" class="space-y-2 pt-1"></div>
                 </div>
 
-                <!-- Dictamen del Auditor -->
-                <div class="bg-slate-50 border-l-4 border-emerald-500 p-3 rounded-r-xl text-xs text-slate-600">
-                    <span class="font-bold text-slate-800 block mb-0.5"><i class="fa-solid fa-robot text-emerald-600 mr-1"></i>Dictamen Automático de Auditoría Conjunta:</span>
-                    <span id="ui-auditor-notes">Vista previa de demostración: cuando subas tus documentos en la pestaña "Crear", aquí aparecerá la validación oficial de tu Vida Laboral y nóminas.</span>
+                <!-- Dictamen del Auditor (Sanitizado contra DNIs) -->
+                <div id="ui-auditor-box" class="bg-slate-50 border-l-4 border-emerald-600 p-4 rounded-r-xl text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    <span class="font-bold text-slate-900 block mb-1"><i class="fa-solid fa-robot text-emerald-600 mr-1.5"></i>Dictamen Técnico de Auditoría:</span>
+                    <span id="ui-auditor-notes">Vista previa de demostración: cuando subas tus documentos en el botón "Crear", aquí aparecerá la validación oficial de tu Vida Laboral y nóminas sin exponer tu número de DNI.</span>
                 </div>
 
-                <!-- 4 Pilares Resumen -->
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/70">
-                        <div class="flex items-center space-x-1.5 text-emerald-600 text-[11px] font-bold mb-1">
-                            <i class="fa-solid fa-briefcase"></i><span>PERFIL GLOBAL</span>
+                <!-- 4 Pilares Resumen (Texto más grande y claro) -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
+                            <i class="fa-solid fa-briefcase"></i><span>PERFIL LABORAL</span>
                         </div>
-                        <p id="ui-category" class="text-xs font-extrabold text-slate-800">Indefinido + Funcionario</p>
-                        <p id="ui-ct-code" class="text-[11px] text-slate-500 mt-0.5">Códigos TGSS: 100 + Func.</p>
+                        <p id="ui-category" class="text-sm font-bold text-slate-900">Indefinido + Funcionario</p>
+                        <p id="ui-ct-code" class="text-xs text-slate-500 mt-0.5">Códigos TGSS: 100 + Func.</p>
                     </div>
 
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/70">
-                        <div class="flex items-center space-x-1.5 text-emerald-600 text-[11px] font-bold mb-1">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
                             <i class="fa-solid fa-euro-sign"></i><span>INGRESO CONJUNTO</span>
                         </div>
-                        <p id="ui-income-bracket" class="text-xs font-extrabold text-slate-800">3.400 € - 3.800 €/mes</p>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Suma neta de firmantes</p>
+                        <p id="ui-income-bracket" class="text-sm font-bold text-slate-900">3.400 € - 3.800 €/mes</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Líquido mensual neto</p>
                     </div>
 
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/70">
-                        <div class="flex items-center space-x-1.5 text-emerald-600 text-[11px] font-bold mb-1">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
                             <i class="fa-solid fa-scale-balanced"></i><span>CARGAS EN NÓMINA</span>
                         </div>
-                        <p id="ui-garnishment" class="text-xs font-extrabold text-slate-800">0 Embargos</p>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Sin retenciones judiciales</p>
+                        <p id="ui-garnishment" class="text-sm font-bold text-slate-900">0 Embargos</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Sin retenciones judiciales</p>
                     </div>
 
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/70">
-                        <div class="flex items-center space-x-1.5 text-emerald-600 text-[11px] font-bold mb-1">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
                             <i class="fa-solid fa-shield-cat"></i><span>TECHO ASEGURADORA</span>
                         </div>
-                        <p id="ui-max-rent" class="text-xs font-extrabold text-slate-800">Hasta 1.260 €/mes</p>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Límite 35% esfuerzo conjunto</p>
+                        <p id="ui-max-rent" class="text-sm font-bold text-slate-900">Hasta 1.260 €/mes</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Máximo 35% de esfuerzo</p>
                     </div>
                 </div>
 
                 <!-- CALCULADORA EN VIVO PARA EL PROPIETARIO -->
-                <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-inner no-print">
+                <div class="bg-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-inner no-print">
                     <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                            <i class="fa-solid fa-calculator mr-1"></i>Simulador para Propietarios
+                        <span class="text-xs sm:text-sm font-bold uppercase tracking-wide text-emerald-400">
+                            <i class="fa-solid fa-calculator mr-1.5"></i>Simulador para Propietarios
                         </span>
-                        <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">En tiempo real</span>
+                        <span class="text-xs bg-slate-800 px-2.5 py-0.5 rounded text-slate-300">Interactivo</span>
                     </div>
-                    <p class="text-[11px] text-slate-300 mb-3">Escribe el precio mensual de tu alquiler para verificar el endeudamiento conjunto de este expediente:</p>
+                    <p class="text-xs text-slate-300 mb-3.5">Introduce la renta mensual de tu piso para comprobar el porcentaje de esfuerzo de este candidato:</p>
                     
                     <div class="flex items-center space-x-3">
                         <div class="relative w-1/2">
                             <input type="number" id="rent-input" value="850" oninput="calculateEffort()" 
-                                class="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-lg focus:outline-none focus:border-emerald-400">
-                            <span class="absolute right-3 top-2.5 text-slate-400 font-bold text-sm">€/mes</span>
+                                class="w-full bg-slate-800 border border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold text-lg focus:outline-none focus:border-emerald-400">
+                            <span class="absolute right-3.5 top-3 text-slate-400 font-bold text-sm">€/mes</span>
                         </div>
-                        <div class="w-1/2 bg-slate-800/90 p-2 rounded-xl border border-slate-700 text-center">
-                            <span class="block text-[10px] text-slate-400">Esfuerzo Financiero</span>
-                            <span id="effort-result" class="text-base font-black text-emerald-400">23.6% (Óptimo)</span>
+                        <div class="w-1/2 bg-slate-800/90 p-2.5 rounded-xl border border-slate-700 text-center">
+                            <span class="block text-xs text-slate-400">Esfuerzo Financiero</span>
+                            <span id="effort-result" class="text-base sm:text-lg font-black text-emerald-400">23.6% (Óptimo)</span>
                         </div>
                     </div>
-                    <div id="insurance-badge" class="mt-3 text-xs bg-emerald-950/90 border border-emerald-600/50 text-emerald-300 p-2.5 rounded-xl flex items-center">
-                        <i class="fa-solid fa-check-double text-base mr-2 text-emerald-400"></i>
+                    <div id="insurance-badge" class="mt-3.5 text-xs sm:text-sm bg-emerald-950/90 border border-emerald-600/50 text-emerald-200 p-3 rounded-xl flex items-center">
+                        <i class="fa-solid fa-check-double text-base mr-2.5 text-emerald-400"></i>
                         <span><strong>APTO PARA SEGURO DE IMPAGO:</strong> Cumple holgadamente el requisito (menor al 35%).</span>
                     </div>
                 </div>
 
                 <!-- CAJA DIFERENCIADA DE ACCIONES PARA PROPIETARIOS Y DESCARGA PDF -->
-                <div class="space-y-3 pt-1 no-print">
+                <div class="space-y-3.5 pt-1 no-print">
                     
-                    <!-- Recuadro exclusivo para el Propietario / Arrendador -->
-                    <div class="bg-indigo-50/80 border-2 border-indigo-200 p-3.5 rounded-2xl space-y-2">
+                    <div class="bg-indigo-50/70 border border-indigo-200 p-4 rounded-xl space-y-2.5">
                         <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-indigo-900 bg-indigo-200/80 px-2 py-0.5 rounded-md">
-                                <i class="fa-solid fa-building-user mr-1"></i>Acción Exclusiva para Propietarios / Agencias
+                            <span class="text-xs font-extrabold uppercase tracking-wide text-indigo-950 bg-indigo-200/70 px-2.5 py-1 rounded-md">
+                                <i class="fa-solid fa-building-user mr-1.5"></i>Exclusivo Propietarios y Agencias
                             </span>
-                            <span class="text-[10px] text-indigo-700 font-semibold">Doble Llave RGPD</span>
+                            <span class="text-xs text-indigo-700 font-semibold">Doble Llave RGPD</span>
                         </div>
-                        <p class="text-[11px] text-indigo-950/80 leading-tight">
-                            ¿Alquilas un piso y te encaja este candidato? Envíale tu oferta directamente a su WhatsApp y Buzón Privado para solicitarle su documentación original:
+                        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            Si alquilas un inmueble y te interesa este perfil, envíale tu propuesta a su WhatsApp y Buzón Privado para solicitarle la documentación original:
                         </p>
-                        <button onclick="handleProAction('contact')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl shadow-md shadow-emerald-600/20 transition flex items-center justify-center space-x-2 text-xs">
-                            <i class="fa-brands fa-whatsapp text-base"></i>
+                        <button onclick="handleProAction('contact')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-sm transition flex items-center justify-center space-x-2 text-sm">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
                             <span>Soy Propietario: Contactar y Solicitar Documentación</span>
                         </button>
                     </div>
                     
-                    <!-- Botones de Utilidad (Descargar PDF e Información Seguro Impago) -->
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="handleProAction('pdf')" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center space-x-1.5 text-xs relative">
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button onclick="handleProAction('pdf')" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-bold py-3 px-3 rounded-xl transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
                             <i class="fa-solid fa-file-pdf text-rose-600"></i>
                             <span>Descargar PDF</span>
-                            <span id="pdf-pro-tag" class="bg-amber-400 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded ml-1">PRO</span>
+                            <span id="pdf-pro-tag" class="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded ml-1">PRO</span>
                         </button>
-                        <button onclick="handleProAction('insurance')" class="bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center space-x-1.5 text-xs">
+                        <button onclick="handleProAction('insurance')" class="bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-950 font-bold py-3 px-3 rounded-xl transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
                             <i class="fa-solid fa-umbrella text-amber-600"></i>
                             <span>Info Seguro Impago</span>
                         </button>
@@ -464,14 +473,14 @@
             </div>
 
             <!-- Banner para llevar al Propietario al Catálogo -->
-            <div id="landlord-bottom-cta" class="mt-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-4 rounded-2xl shadow-md flex items-center justify-between border border-indigo-800/50 no-print">
-                <div class="pr-2">
-                    <span class="text-[10px] font-bold uppercase bg-indigo-500 px-2 py-0.5 rounded-full">Área Propietarios</span>
-                    <h4 class="font-bold text-sm mt-1">¿Buscas más candidatos verificados?</h4>
-                    <p class="text-[11px] text-slate-300 mt-0.5">Filtra por parejas, ocupaciones, funcionarios o ingresos sin publicar tu piso.</p>
+            <div id="landlord-bottom-cta" class="mt-4 bg-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-sm flex items-center justify-between border border-slate-800 no-print">
+                <div class="pr-3">
+                    <span class="text-[11px] font-bold uppercase bg-indigo-600 px-2.5 py-0.5 rounded-full">Área Propietarios</span>
+                    <h4 class="font-bold text-sm sm:text-base mt-1.5">¿Buscas más candidatos verificados?</h4>
+                    <p class="text-xs text-slate-300 mt-0.5">Filtra por parejas, ocupaciones, funcionarios o ingresos sin publicar tu vivienda.</p>
                 </div>
-                <button onclick="switchView('directory')" class="bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-xs px-3.5 py-2.5 rounded-xl shrink-0 shadow transition">
-                    Ver Catálogo <i class="fa-solid fa-arrow-right ml-1 text-indigo-600"></i>
+                <button onclick="switchView('directory')" class="bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shrink-0 shadow transition">
+                    Ver Catálogo →
                 </button>
             </div>
         </div>
@@ -479,55 +488,55 @@
         <!-- ==========================================
              VISTA 3: CATÁLOGO / BOLSA DE INQUILINOS PRE-AUDITADOS
              ========================================== -->
-        <div id="view-directory" class="max-w-md mx-auto mt-3 px-3 hidden">
-            <div class="bg-slate-900 text-white rounded-3xl p-5 shadow-xl mb-4 border border-slate-800">
+        <div id="view-directory" class="max-w-lg mx-auto mt-4 px-3.5 hidden">
+            <div class="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-md mb-4 border border-slate-800">
                 <div class="flex justify-between items-center">
-                    <span class="bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
-                        <i class="fa-solid fa-building-user mr-1"></i>Área Exclusiva Propietarios
+                    <span class="bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 text-xs font-bold px-3 py-0.5 rounded-full">
+                        <i class="fa-solid fa-building-user mr-1.5"></i>Área Exclusiva Propietarios
                     </span>
-                    <span class="text-[10px] text-emerald-400 font-bold"><i class="fa-solid fa-shield-check mr-1"></i>Perfiles Auditados</span>
+                    <span class="text-xs text-emerald-400 font-semibold"><i class="fa-solid fa-shield-check mr-1"></i>Perfiles Auditados</span>
                 </div>
 
-                <h2 class="text-lg font-extrabold mt-2">Bolsa de Inquilinos Pre-Auditados</h2>
-                <p class="text-xs text-slate-300 mt-0.5">Consulta el desglose de ocupación y categoría laboral de todos los firmantes de cada expediente sin publicar tu piso.</p>
+                <h2 class="text-xl font-extrabold mt-2.5">Bolsa de Inquilinos Pre-Auditados</h2>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">Consulta el desglose de ocupación, categoría laboral y solvencia de los candidatos sin publicar tu anuncio.</p>
 
-                <!-- AVISO LEGAL DESTACADO DE NO INFORMACIÓN SENSIBLE EN LA BASE DE DATOS -->
-                <div class="mt-3 bg-slate-800/90 border border-emerald-500/40 p-3 rounded-2xl text-[11px] text-slate-200 leading-relaxed">
-                    <div class="font-bold text-emerald-400 flex items-center mb-0.5">
-                        <i class="fa-solid fa-user-lock mr-1.5"></i>Base de Datos Sin Información Sensible (RGPD)
+                <!-- AVISO LEGAL DESTACADO DE NO INFORMACIÓN SENSIBLE -->
+                <div class="mt-3.5 bg-slate-800/90 border border-emerald-500/40 p-3.5 rounded-xl text-xs text-slate-200 leading-relaxed">
+                    <div class="font-bold text-emerald-400 flex items-center mb-1">
+                        <i class="fa-solid fa-user-lock mr-1.5"></i>Base de Datos Anonimizada (Cumplimiento RGPD)
                     </div>
-                    En este catálogo <strong>no se almacenan ni exponen DNIs, nóminas originales, nombres de empresas ni apellidos completos</strong>. La documentación personal solo puede compartirse tras ponerse en contacto con el candidato a través de su Pasaporte de Solvencia (botón <em>"Soy Propietario: Contactar y Solicitar Documentación"</em>).
+                    En este catálogo <strong>jamás se almacenan ni muestran números de DNI/NIE, nóminas originales, nombres de empresas ni apellidos completos</strong>. La documentación original solo se comparte entre las partes tras contactar mediante el Pasaporte de Solvencia.
                 </div>
 
                 <!-- Filtros Completos -->
-                <div class="mt-4 space-y-2.5 pt-3 border-t border-slate-800">
-                    <div class="grid grid-cols-2 gap-2">
+                <div class="mt-4 space-y-3 pt-3.5 border-t border-slate-800">
+                    <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Zona / Municipio</label>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">Zona / Municipio</label>
                             <input type="text" id="filter-zone" oninput="renderDirectoryList()" placeholder="Ej: Valdemoro, Madrid..." 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Alquiler de tu Piso (€)</label>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">Alquiler de tu Piso (€)</label>
                             <input type="number" id="filter-rent" oninput="renderDirectoryList()" placeholder="Ej: 950" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white font-bold focus:outline-none focus:border-emerald-400">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Nº de Titulares Firmantes</label>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">Nº de Titulares</label>
                             <select id="filter-applicants" onchange="renderDirectoryList()" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white font-medium focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white font-medium focus:outline-none focus:border-emerald-400">
                                 <option value="ALL">Cualquier Nº Titulares</option>
                                 <option value="1">1 Titular (Individual)</option>
-                                <option value="2">2 Titulares (Parejas, etc.)</option>
+                                <option value="2">2 Titulares (Parejas)</option>
                                 <option value="3_PLUS">3 o más Titulares</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Categoría / Ocupación</label>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">Categoría / Ocupación</label>
                             <select id="filter-category" onchange="renderDirectoryList()" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white font-medium focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white font-medium focus:outline-none focus:border-emerald-400">
                                 <option value="ALL">Todas las Categorías</option>
                                 <option value="Funcionario">Funcionarios / Público</option>
                                 <option value="Indefinido">Contratos Indefinidos</option>
@@ -539,94 +548,94 @@
             </div>
 
             <!-- Lista de Candidatos -->
-            <div id="directory-list" class="space-y-3"></div>
+            <div id="directory-list" class="space-y-3.5"></div>
         </div>
 
         <!-- ==========================================
              VISTA 2: BUZÓN PRIVADO DEL INQUILINO (ACCESO CON ID)
              ========================================== -->
-        <div id="view-inbox" class="max-w-md mx-auto mt-3 px-3 hidden">
-            <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-5 space-y-4">
-                <div class="border-b border-slate-100 pb-3">
-                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
+        <div id="view-inbox" class="max-w-lg mx-auto mt-4 px-3.5 hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
+                <div class="border-b border-slate-100 pb-3.5">
+                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full">
                         <i class="fa-solid fa-envelope-open-text mr-1"></i>Área Exclusiva Inquilinos
                     </span>
-                    <h2 class="text-lg font-extrabold text-slate-900 mt-1.5">Buzón Privado de Ofertas</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Accede únicamente con el ID de tu Pasaporte para ver las ofertas y enlaces de Idealista que te han enviado los propietarios.</p>
+                    <h2 class="text-xl font-extrabold text-slate-900 mt-2.5">Buzón Privado de Ofertas</h2>
+                    <p class="text-sm text-slate-600 mt-1">Introduce el identificador de tu Pasaporte para consultar las propuestas de alquiler que te han enviado los propietarios.</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Tu ID de Pasaporte (ej: IC-894F2A)</label>
+                    <label class="block text-sm font-bold text-slate-800 mb-1.5">Tu ID de Pasaporte (ej: IC-894F2A)</label>
                     <div class="flex space-x-2">
-                        <input type="text" id="inbox-id-input" placeholder="IC-XXXXXX" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-mono font-bold uppercase">
-                        <button onclick="checkTenantInbox()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shrink-0 transition">
-                            Ver Ofertas
+                        <input type="text" id="inbox-id-input" placeholder="IC-XXXXXX" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-mono font-bold uppercase">
+                        <button onclick="checkTenantInbox()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-xl text-sm shrink-0 transition">
+                            Consultar
                         </button>
                     </div>
                 </div>
                 <div id="tenant-inbox-list" class="space-y-3 pt-2">
-                    <div class="text-center py-6 text-xs text-slate-400">Introduce el ID de tu pasaporte arriba para consultar tus mensajes privados.</div>
+                    <div class="text-center py-8 text-sm text-slate-400">Introduce tu código ID arriba para ver tus mensajes privados.</div>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- ==========================================
-         PIE DE PÁGINA LEGAL DISCRETO (TÉRMINOS, PRIVACIDAD Y PROTECCIÓN DE DATOS)
+         PIE DE PÁGINA LEGAL
          ========================================== -->
-    <footer class="max-w-md mx-auto w-full px-4 pt-8 pb-4 text-center text-[11px] text-slate-400 space-y-1.5 no-print">
-        <div class="flex flex-wrap justify-center items-center gap-x-3 gap-y-1 font-medium text-slate-500">
-            <button onclick="openLegalModal()" class="hover:text-slate-800 underline">Términos y Condiciones</button>
+    <footer class="max-w-lg mx-auto w-full px-4 pt-8 pb-4 text-center text-xs text-slate-500 space-y-2 no-print">
+        <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1.5 font-semibold text-slate-600">
+            <button onclick="openLegalModal()" class="hover:text-slate-900 underline">Términos y Condiciones</button>
             <span>•</span>
-            <button onclick="openLegalModal()" class="hover:text-slate-800 underline">Política de Privacidad</button>
+            <button onclick="openLegalModal()" class="hover:text-slate-900 underline">Política de Privacidad</button>
             <span>•</span>
-            <button onclick="openPrivacyModal()" class="hover:text-slate-800 underline">Protección de Datos (RGPD / Custodia Cero)</button>
+            <button onclick="openPrivacyModal()" class="hover:text-slate-900 underline">Protección de Datos (RGPD / Custodia Cero)</button>
         </div>
-        <p class="text-[10px] text-slate-400">© 2026 InquiCheck España • Cumplimiento LSSI-CE, RGPD (UE) 2016/679 y LOPDGDD 3/2018.</p>
+        <p class="text-xs text-slate-400">© 2026 InquiCheck España • Cumplimiento estricto LSSI-CE, RGPD (UE) 2016/679 y LOPDGDD 3/2018.</p>
     </footer>
 
     <!-- ==========================================
          MODAL: CÓMO SOLICITAR LA VIDA LABORAL EN LA SEGURIDAD SOCIAL
          ========================================== -->
-    <div id="vidalaboral-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3">
-                <div class="flex items-center space-x-2.5">
-                    <div class="bg-indigo-100 text-indigo-700 w-9 h-9 rounded-xl flex items-center justify-center font-bold shrink-0">
+    <div id="vidalaboral-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-100 text-indigo-700 w-10 h-10 rounded-xl flex items-center justify-center font-bold shrink-0">
                         <i class="fa-solid fa-building-columns text-lg"></i>
                     </div>
                     <div>
-                        <span class="text-[10px] font-extrabold uppercase text-indigo-700 tracking-wider">Guía Rápida Oficial (TGSS)</span>
+                        <span class="text-xs font-bold uppercase text-indigo-700">Portal Oficial TGSS</span>
                         <h3 class="text-base font-extrabold text-slate-900">Cómo descargar tu Vida Laboral en PDF</h3>
                     </div>
                 </div>
                 <button onclick="closeVidaLaboralModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <div class="space-y-2.5 text-xs text-slate-600">
-                <p>Puedes obtener tu Informe de Vida Laboral oficial en PDF (con código CSV) gratis y al instante desde tu móvil u ordenador siguiendo estos 3 pasos:</p>
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
-                    <div class="flex items-start space-x-2">
-                        <span class="bg-indigo-600 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">1</span>
-                        <span>Entra en el portal oficial <strong>Importass de la Seguridad Social</strong> pulsando el botón de abajo.</span>
+            <div class="space-y-3 text-sm text-slate-600">
+                <p>Obtén tu Informe de Vida Laboral oficial en PDF (con código CSV) gratis y al instante siguiendo estos 3 pasos:</p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5 text-xs sm:text-sm">
+                    <div class="flex items-start space-x-2.5">
+                        <span class="bg-indigo-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Accede al portal oficial <strong>Importass de la Seguridad Social</strong> desde el botón inferior.</span>
                     </div>
-                    <div class="flex items-start space-x-2">
-                        <span class="bg-indigo-600 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">2</span>
-                        <span>Pulsa en <strong>"Consultar vida laboral"</strong> e identifícate con <strong>SMS (Vía SMS)</strong>, <strong>Cl@ve</strong> o <strong>Certificado Digital</strong>.</span>
+                    <div class="flex items-start space-x-2.5">
+                        <span class="bg-indigo-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Pulsa en <strong>"Consultar vida laboral"</strong> e identifícate mediante <strong>SMS</strong>, <strong>Cl@ve</strong> o <strong>Certificado Digital</strong>.</span>
                     </div>
-                    <div class="flex items-start space-x-2">
-                        <span class="bg-indigo-600 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">3</span>
-                        <span>Pulsa en <strong>"Descargar vida laboral en PDF"</strong> y súbelo directamente en esta pantalla.</span>
+                    <div class="flex items-start space-x-2.5">
+                        <span class="bg-indigo-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Pulsa en <strong>"Descargar vida laboral en PDF"</strong> y súbelo en esta pantalla.</span>
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-2 pt-1">
+            <div class="space-y-2.5 pt-1">
                 <a href="https://portal.seg-social.gob.es/wps/portal/importass/importass/Categorias/Vida+laboral+e+informes/Informes+sobre+tu+situacion+laboral/Informe+de+tu+vida+laboral" target="_blank" rel="noopener noreferrer"
-                   class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition flex items-center justify-center space-x-2">
+                   class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm shadow transition flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    <span>Abrir Web Oficial de la Seguridad Social (Importass)</span>
+                    <span>Ir a la Web de la Seguridad Social</span>
                 </a>
-                <button onclick="closeVidaLaboralModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                <button onclick="closeVidaLaboralModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs sm:text-sm transition">
                     Volver al formulario
                 </button>
             </div>
@@ -636,39 +645,33 @@
     <!-- ==========================================
          MODAL DE TÉRMINOS Y CONDICIONES Y POLÍTICA DE PRIVACIDAD (LSSI / RGPD)
          ========================================== -->
-    <div id="legal-terms-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+    <div id="legal-terms-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
                 <div>
-                    <span class="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">Marco Normativo Español y Europeo</span>
-                    <h3 class="text-base font-extrabold text-slate-900">Información Legal, Términos y Privacidad</h3>
+                    <span class="text-xs font-bold uppercase text-slate-500">Marco Normativo Español y Europeo</span>
+                    <h3 class="text-lg font-extrabold text-slate-900">Términos Legales y Privacidad</h3>
                 </div>
                 <button onclick="closeLegalModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <h4 class="font-extrabold text-slate-900 mb-1">1. Términos y Condiciones de Uso (LSSI-CE)</h4>
-                    <p>InquiCheck es una herramienta tecnológica de pre-auditoría documental y generación voluntaria de certificados de solvencia para arrendamientos urbanos. InquiCheck no actúa como agencia inmobiliaria ni aseguradora, ni garantiza el cumplimiento futuro de las obligaciones contractuales entre arrendador y arrendatario. El usuario declara bajo su exclusiva responsabilidad que los documentos aportados son veraces y que cuenta con la autorización de todos los co-titulares incluidos en el expediente.</p>
+            <div class="space-y-3.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-slate-900 mb-1">1. Términos y Condiciones de Uso (LSSI-CE)</h4>
+                    <p>InquiCheck es una herramienta tecnológica de auditoría documental automatizada y emisión voluntaria de certificados de solvencia para arrendamientos urbanos. InquiCheck no actúa como agencia inmobiliaria ni aseguradora. El usuario declara bajo su responsabilidad que los documentos aportados son íntegros y auténticos, penalizándose automáticamente con calificación de riesgo alto cualquier discrepancia de titularidad entre documentos.</p>
                 </div>
 
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <h4 class="font-extrabold text-slate-900 mb-1">2. Política de Privacidad (RGPD UE 2016/679 y LOPDGDD 3/2018)</h4>
-                    <p>En cumplimiento del principio de <strong>Minimización de Datos (Art. 5.1.c RGPD)</strong> y <strong>Privacidad desde el Diseño (Art. 25 RGPD)</strong>:</p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-slate-900 mb-1">2. Política de Privacidad y Filtro Anti-DNI (RGPD Art. 5.1.c)</h4>
+                    <p>En cumplimiento estricto del principio de <strong>Minimización de Datos</strong>:</p>
                     <ul class="list-disc pl-4 mt-1.5 space-y-1">
-                        <li><strong>No almacenamiento de documentos fuente:</strong> Los archivos PDF seleccionados (Vida Laboral y Nóminas) se procesan en memoria volátil (RAM) exclusivamente durante los segundos que dura la extracción de métricas y son destruidos inmediatamente después sin guardarse en disco.</li>
-                        <li><strong>Datos publicados en el Certificado y Catálogo:</strong> Únicamente se conservan indicadores anonimizados o semianonimizados (nombre de pila e inicial, categoría laboral, ocupación, antigüedad, rango de ingresos netos y zona de búsqueda). Jamás se almacena ni publica el DNI/NIE, NAF, IBAN ni razón social de la empresa empleadora.</li>
-                        <li><strong>Legitimación y Conservación:</strong> El tratamiento se basa en el consentimiento explícito del interesado (Art. 6.1.a RGPD). Los certificados caducan automáticamente a los 90 días.</li>
+                        <li><strong>Destrucción en RAM:</strong> Los archivos PDF seleccionados se leen en memoria volátil durante la extracción de métricas y se destruyen inmediatamente sin guardarse en ningún disco ni repositorio.</li>
+                        <li><strong>Bloqueo Algorítmico de DNI/NIE/IBAN:</strong> El sistema aplica un filtro de expresiones regulares que impide almacenar o mostrar números de DNI, NIE, NAF o cuentas bancarias en el certificado o en el catálogo, incluso en caso de detectarse discrepancias documentales.</li>
                     </ul>
-                </div>
-
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                    <h4 class="font-extrabold text-slate-900 mb-1">3. Comunicaciones entre Propietarios e Inquilinos</h4>
-                    <p>Los datos de contacto introducidos por los propietarios en el formulario de solicitud se emplean exclusivamente para registrar la oferta inmobiliaria en el Buzón Privado asociado al ID del pasaporte y facilitar la comunicación voluntaria entre ambas partes.</p>
                 </div>
             </div>
 
-            <button onclick="closeLegalModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition">
+            <button onclick="closeLegalModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition">
                 Cerrar Información Legal
             </button>
         </div>
@@ -678,22 +681,22 @@
          MODAL OCULTO DE ADMINISTRADOR (5 CLICS EN EL LOGO)
          ========================================== -->
     <div id="secret-admin-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 text-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                <span class="text-xs font-bold text-emerald-400"><i class="fa-solid fa-terminal mr-1.5"></i>Panel Interno Admin (Oculto)</span>
+        <div class="bg-slate-900 border border-slate-700 text-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+                <span class="text-xs font-bold text-emerald-400"><i class="fa-solid fa-terminal mr-1.5"></i>Panel Interno Admin</span>
                 <button onclick="document.getElementById('secret-admin-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Gemini API Key (Respaldo Local)</label>
+                <label class="block text-xs font-bold text-slate-400 mb-1">Gemini API Key (Respaldo Local)</label>
                 <input type="password" id="api-key-input" placeholder="AQ... o AIzaSy..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono">
             </div>
             <div>
                 <div class="flex justify-between items-center mb-1">
-                    <label class="block text-[10px] font-bold uppercase text-slate-400">Modelo Activo</label>
-                    <button type="button" onclick="autoDetectModel()" class="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded font-bold">Auto-detectar</button>
+                    <label class="block text-xs font-bold text-slate-400">Modelo Activo</label>
+                    <button type="button" onclick="autoDetectModel()" class="text-xs bg-emerald-600 text-white px-2.5 py-0.5 rounded font-bold">Auto-detectar</button>
                 </div>
                 <input type="text" id="model-name-input" value="gemini-3.8-flash" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-emerald-400 font-mono font-bold">
-                <p id="model-status-msg" class="text-[10px] text-slate-400 mt-1"></p>
+                <p id="model-status-msg" class="text-xs text-slate-400 mt-1"></p>
             </div>
             <button onclick="saveGeminiConfigLocally()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
                 Guardar y Cerrar
@@ -704,63 +707,58 @@
     <!-- ==========================================
          MODAL COMPARATIVO: VERSIÓN GRATUITA VS VERSIÓN PRO
          ========================================== -->
-    <div id="pro-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+    <div id="pro-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
                 <div>
-                    <span class="bg-amber-100 text-amber-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">
+                    <span class="bg-amber-100 text-amber-900 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase">
                         <i class="fa-solid fa-crown mr-1"></i>Pasaporte InquiCheck PRO
                     </span>
-                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Diferencias entre Versión Gratuita y PRO</h3>
+                    <h3 class="text-lg font-extrabold text-slate-900 mt-1.5">Versión Gratuita vs. PRO</h3>
                 </div>
                 <button onclick="closeProModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <p class="text-xs text-slate-600">
-                Con la <strong>Versión Gratuita</strong> podéis auditar vuestros documentos y conocer vuestro Scoring conjunto, pero necesitáis activar la <strong>Versión PRO</strong> para compartir el certificado con propietarios y recibir ofertas:
+            <p class="text-xs sm:text-sm text-slate-600">
+                Con la <strong>Versión Gratuita</strong> puedes auditar tus documentos y conocer tu Scoring real. Activa la <strong>Versión PRO</strong> para compartir tu certificado oficial con propietarios:
             </p>
 
-            <div class="border border-slate-200 rounded-2xl overflow-hidden text-xs">
-                <div class="grid grid-cols-3 bg-slate-900 text-white font-bold py-2 px-3 text-[11px]">
+            <div class="border border-slate-200 rounded-xl overflow-hidden text-xs sm:text-sm">
+                <div class="grid grid-cols-3 bg-slate-900 text-white font-bold py-2.5 px-3">
                     <span>Funcionalidad</span>
                     <span class="text-center text-slate-300">Gratis</span>
-                    <span class="text-center text-amber-400">Versión PRO</span>
+                    <span class="text-center text-amber-400">PRO</span>
                 </div>
-                <div class="divide-y divide-slate-100 text-[11px]">
-                    <div class="grid grid-cols-3 py-2 px-3 items-center">
-                        <span class="font-medium text-slate-700">Auditoría Multi-Titular + Scoring</span>
+                <div class="divide-y divide-slate-100">
+                    <div class="grid grid-cols-3 py-2.5 px-3 items-center">
+                        <span class="font-medium text-slate-700">Auditoría IA + Scoring</span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                     </div>
-                    <div class="grid grid-cols-3 py-2 px-3 items-center bg-slate-50/60">
-                        <span class="font-medium text-slate-700">Simulador Esfuerzo</span>
-                        <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
-                        <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
-                    </div>
-                    <div class="grid grid-cols-3 py-2 px-3 items-center">
+                    <div class="grid grid-cols-3 py-2.5 px-3 items-center bg-slate-50/60">
                         <span class="font-bold text-slate-900">Código QR Oficial</span>
-                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i> Bloqueado</span>
+                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Activo</span>
                     </div>
-                    <div class="grid grid-cols-3 py-2 px-3 items-center bg-slate-50/60">
-                        <span class="font-bold text-slate-900">Enlace para Idealista y WhatsApp</span>
-                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i> Bloqueado</span>
+                    <div class="grid grid-cols-3 py-2.5 px-3 items-center">
+                        <span class="font-bold text-slate-900">Enlace Idealista y WhatsApp</span>
+                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Activo</span>
                     </div>
-                    <div class="grid grid-cols-3 py-2 px-3 items-center">
-                        <span class="font-bold text-slate-900">Recibir Contactos de Propietarios</span>
-                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i> Bloqueado</span>
-                        <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Ilimitado</span>
+                    <div class="grid grid-cols-3 py-2.5 px-3 items-center bg-slate-50/60">
+                        <span class="font-bold text-slate-900">Recibir Ofertas de Caseros</span>
+                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
+                        <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                     </div>
-                    <div class="grid grid-cols-3 py-2 px-3 items-center bg-slate-50/60">
-                        <span class="font-bold text-slate-900">Descargar Certificado en PDF</span>
-                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i> Bloqueado</span>
-                        <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Incluido</span>
+                    <div class="grid grid-cols-3 py-2.5 px-3 items-center">
+                        <span class="font-bold text-slate-900">Descargar Certificado PDF</span>
+                        <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
+                        <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                     </div>
                 </div>
             </div>
 
-            <button onclick="activateProDirectly()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black py-3.5 rounded-xl text-xs shadow-lg transition flex items-center justify-center space-x-2">
+            <button onclick="activateProDirectly()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow transition flex items-center justify-center space-x-2">
                 <i class="fa-solid fa-bolt"></i>
                 <span>Activar PRO (GRATIS por tiempo limitado)</span>
             </button>
@@ -770,65 +768,39 @@
     <!-- ==========================================
          MODAL LEGAL RGPD / CUSTODIA CERO COMPLETO
          ========================================== -->
-    <div id="privacy-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3">
-                <div class="flex items-center space-x-2.5">
-                    <div class="bg-emerald-100 text-emerald-700 w-9 h-9 rounded-xl flex items-center justify-center font-bold">
+    <div id="privacy-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-emerald-100 text-emerald-700 w-10 h-10 rounded-xl flex items-center justify-center font-bold shrink-0">
                         <i class="fa-solid fa-scale-balanced text-lg"></i>
                     </div>
                     <div>
-                        <span class="text-[10px] font-extrabold uppercase text-emerald-700 tracking-wider">Garantía Legal LOPDGDD y RGPD (UE)</span>
-                        <h3 class="text-base font-extrabold text-slate-900">¿Qué ocurre exactamente con tus archivos?</h3>
+                        <span class="text-xs font-bold uppercase text-emerald-700">Garantía Legal LOPDGDD y RGPD</span>
+                        <h3 class="text-base font-extrabold text-slate-900">Protección y Custodia Cero</h3>
                     </div>
                 </div>
                 <button onclick="closePrivacyModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <div class="space-y-3 text-xs text-slate-600">
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+            <div class="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                     <span class="font-bold text-slate-900 flex items-center mb-1">
-                        <i class="fa-solid fa-microchip text-emerald-600 mr-1.5"></i>1. Lectura Efímera en Memoria RAM (Zero-Storage)
+                        <i class="fa-solid fa-microchip text-emerald-600 mr-2"></i>1. Lectura Efímera en Memoria RAM
                     </span>
-                    <p class="leading-relaxed">
-                        Cuando seleccionas la Vida Laboral o Nómina en PDF de uno o varios titulares, los archivos <strong>no se guardan en ningún disco duro ni carpeta en la nube</strong>. Se procesan en memoria volátil (RAM) durante 5 segundos únicamente para verificar su autenticidad matemática y sumar ingresos, y se destruyen de forma irreversible (<code>null purge</code>).
-                    </p>
+                    <p>Los archivos PDF seleccionados no se guardan en ningún disco duro ni servidor. Se procesan en memoria volátil durante 5 segundos para validar el CSV y la coherencia entre documentos, y se destruyen de forma irreversible.</p>
                 </div>
 
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                     <span class="font-bold text-slate-900 flex items-center mb-1">
-                        <i class="fa-solid fa-user-secret text-emerald-600 mr-1.5"></i>2. Minimización Estricta de Datos (Art. 5.1.c RGPD)
+                        <i class="fa-solid fa-user-secret text-emerald-600 mr-2"></i>2. Ocultación Total de DNI/NIE (Art. 5.1.c RGPD)
                     </span>
-                    <p class="leading-relaxed">
-                        Tu Pasaporte público <strong>jamás muestra DNIs/NIEs, ni números de la Seguridad Social, ni nombres de empresas, ni domicilios, ni apellidos completos</strong>. Solo muestra los nombres de pila e iniciales, el parentesco, la categoría/ocupación laboral de cada miembro y el rango salarial conjunto.
-                    </p>
-                </div>
-
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
-                    <span class="font-bold text-slate-900 flex items-center mb-1">
-                        <i class="fa-solid fa-key text-emerald-600 mr-1.5"></i>3. Control por "Doble Llave" y Caducidad Automática
-                    </span>
-                    <p class="leading-relaxed">
-                        Ningún propietario puede ver vuestra documentación original sin vuestro permiso. Si un arrendador está interesado en vuestro perfil, os envía una oferta indicando los datos de su piso y su enlace de Idealista, que se registra en vuestro Buzón Privado y os avisa por WhatsApp.
-                    </p>
+                    <p>Tu Pasaporte público <strong>jamás muestra tu DNI/NIE, ni número de Seguridad Social, ni el nombre de tu empresa, ni tus apellidos completos</strong>. Si nuestro motor detecta que los documentos subidos pertenecen a personas distintas, reduce el Scoring por discrepancia sin revelar nunca el número de documento.</p>
                 </div>
             </div>
 
-            <div class="border border-slate-200 rounded-2xl overflow-hidden text-[11px]">
-                <div class="bg-slate-100 px-3 py-2 font-bold text-slate-800 border-b border-slate-200">
-                    Información Básica sobre Protección de Datos (Art. 13 RGPD)
-                </div>
-                <div class="divide-y divide-slate-100">
-                    <div class="p-2.5"><strong class="text-slate-800">Finalidad:</strong> Emisión voluntaria de certificado acreditativo de solvencia para arrendamiento urbano.</div>
-                    <div class="p-2.5"><strong class="text-slate-800">Legitimación:</strong> Consentimiento explícito de los interesados (Art. 6.1.a RGPD).</div>
-                    <div class="p-2.5"><strong class="text-slate-800">Conservación de PDFs:</strong> 0 segundos (destrucción inmediata tras extracción de indicadores).</div>
-                    <div class="p-2.5"><strong class="text-slate-800">Servidor de Metadatos:</strong> Infraestructura Cloud ubicada en la Unión Europea.</div>
-                    <div class="p-2.5"><strong class="text-slate-800">Derechos ARSOPOL:</strong> Eliminación instantánea del Pasaporte en cualquier momento.</div>
-                </div>
-            </div>
-
-            <button onclick="closePrivacyModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition">
-                Entendido y Cerrar Certificado Legal
+            <button onclick="closePrivacyModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition">
+                Entendido y Cerrar
             </button>
         </div>
     </div>
@@ -837,45 +809,45 @@
          MODAL DE CONTACTO DEL PROPIETARIO AL INQUILINO
          ========================================== -->
     <div id="contact-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-start">
                 <div>
-                    <span class="bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">Formulario para Propietarios / Agencias</span>
-                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Contactar con <span id="modal-tenant-name">Candidato</span></h3>
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-0.5 rounded-full">Exclusivo Propietarios / Agencias</span>
+                    <h3 class="text-lg font-extrabold text-slate-900 mt-1.5">Contactar con <span id="modal-tenant-name">Candidato</span></h3>
                 </div>
                 <button onclick="closeContactModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <p class="text-[11px] text-slate-500 leading-relaxed">
-                Al pulsar enviar, tu oferta se guardará en el <strong>Buzón Privado del inquilino</strong> (accesible solo con su ID <span id="modal-passport-id" class="font-mono font-bold text-slate-700"></span>) y se abrirá <strong>WhatsApp</strong> con el enlace directo al pasaporte.
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Tu propuesta quedará registrada en el <strong>Buzón Privado del candidato</strong> (<span id="modal-passport-id" class="font-mono font-bold text-slate-800"></span>) y se abrirá <strong>WhatsApp</strong> con el enlace directo al pasaporte.
             </p>
-            <div class="space-y-2">
+            <div class="space-y-3">
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Tu Nombre (Propietario / Agencia)</label>
-                    <input type="text" id="landlord-name" placeholder="Ej: Antonio (Propietario particular)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Tu Nombre (Propietario / Agencia)</label>
+                    <input type="text" id="landlord-name" placeholder="Ej: Antonio (Propietario)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Tu Teléfono / WhatsApp</label>
-                    <input type="tel" id="landlord-phone" placeholder="Ej: 655001122" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Tu Teléfono / WhatsApp</label>
+                    <input type="tel" id="landlord-phone" placeholder="Ej: 655 00 11 22" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Características y Precio del Alquiler</label>
-                    <input type="text" id="landlord-property" placeholder="Ej: Piso 3 hab en Valdemoro - 850 €/mes" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Características y Precio del Alquiler</label>
+                    <input type="text" id="landlord-property" placeholder="Ej: Piso 3 hab en Valdemoro - 850 €/mes" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Información Adicional / Enlace Idealista</label>
-                    <textarea id="landlord-extra" rows="2" placeholder="Pega aquí el enlace de tu anuncio en Idealista/Fotocasa o condiciones adicionales..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium"></textarea>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Información Adicional / Enlace Idealista</label>
+                    <textarea id="landlord-extra" rows="2" placeholder="Pega aquí el enlace de tu anuncio en Idealista o condiciones..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm"></textarea>
                 </div>
             </div>
-            <button onclick="submitContactRequest()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition flex items-center justify-center space-x-1.5">
-                <i class="fa-brands fa-whatsapp text-sm"></i>
-                <span>Enviar Oferta por WhatsApp y Guardar en Buzón</span>
+            <button onclick="submitContactRequest()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow transition flex items-center justify-center space-x-2">
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span>Enviar Propuesta por WhatsApp</span>
             </button>
         </div>
     </div>
 
     <script>
         // =========================================================================
-        // 1. REGISTRO PWA (SERVICE WORKER Y BOTÓN DE INSTALAR APP)
+        // 1. REGISTRO PWA
         // =========================================================================
         let deferredPwaPrompt = null;
 
@@ -903,7 +875,33 @@
         }
 
         // =========================================================================
-        // 2. CREDENCIALES SUPABASE Y CONFIGURACIÓN POR DEFECTO
+        // 2. CORTAFUEGOS ALGORÍTMICO ANTI-DNI / NIE / NIF / IBAN (RGPD ART. 5.1.C)
+        // =========================================================================
+        // Garantiza que NUNCA aparezca un número de DNI/NIE en el pasaporte aunque la IA lo mencione por error
+        function sanitizePII(text) {
+            if (!text || typeof text !== 'string') return "";
+            return text
+                // Bloquea DNI español (8 dígitos seguidos de letra, con o sin guión/espacio/puntos)
+                .replace(/\b\d{1,2}\.?\d{3}\.?\d{3}[-\s]?[A-Za-z]\b/g, '[DNI OCULTO RGPD]')
+                // Bloquea NIE español (X, Y, Z seguido de 7 u 8 dígitos y letra)
+                .replace(/\b[XYZxyz][-\s.]?\d{7,8}[-\s]?[A-Za-z]\b/g, '[NIE OCULTO RGPD]')
+                // Bloquea IBAN español (ES seguido de dígitos)
+                .replace(/\bES\d{2}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{2,4}[-\s]?\d{4,10}\b/gi, '[IBAN OCULTO RGPD]')
+                // Bloquea Número de Afiliación Seguridad Social (NAF de 11-12 dígitos seguidos)
+                .replace(/\b\d{2}[-\s/]?\d{8}[-\s/]?\d{2}\b/g, '[NAF OCULTO RGPD]')
+                .replace(/\b\d{9,14}\b/g, '[ID OCULTO RGPD]');
+        }
+
+        function sanitizeRecordPII(record) {
+            if (!record) return record;
+            record.alias_display = sanitizePII(record.alias_display);
+            record.auditor_notes = sanitizePII(record.auditor_notes);
+            record.employment_category = sanitizePII(record.employment_category);
+            return record;
+        }
+
+        // =========================================================================
+        // 3. CREDENCIALES SUPABASE Y CONFIGURACIÓN
         // =========================================================================
         const SUPABASE_URL = "https://uldfmifgdsfnojygtdyj.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGZtaWZnZHNmbm9qeWd0ZHlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NTI2MTksImV4cCI6MjEwODUyODYxOX0.ySxGOrFplqOlB17zF8u9lF2Ia69ML-RfuTFXj7Vx1NA";
@@ -925,7 +923,7 @@
             id: "IC-DEMO01",
             is_example: true,
             alias_display: "Candidato Ejemplo (Vista Previa)",
-            search_zone: "Municipio de Ejemplo (Vista Demostración)",
+            search_zone: "Municipio de Ejemplo (Demostración)",
             employment_category: "Indefinido + Funcionaria [2T|Matrimonio / Pareja|Titular 1 (Ejemplo): Contrato Indefinido - Sector Industrial (8.0 años) ;; Titular 2 (Ejemplo): Funcionaria / Sector Público (5.0 años)]",
             contract_code_tgss: "100 + Func.",
             seniority_years: 8.0,
@@ -934,10 +932,9 @@
             has_wage_garnishment: false,
             max_safe_rent_35pct: 1260,
             solvency_score: 96,
-            auditor_notes: "Vista previa de demostración: cuando subas tus documentos en el botón 'Crear', aquí aparecerá la auditoría real de vuestra Vida Laboral y nóminas."
+            auditor_notes: "Vista previa de demostración: cuando subas tus documentos en el botón 'Crear', aquí aparecerá la auditoría real de vuestra Vida Laboral y nóminas con protección total de DNI."
         };
 
-        // Perfiles iniciales de respaldo para el catálogo
         let directoryProfiles = [
             {
                 id: "IC-894F2A",
@@ -951,7 +948,7 @@
                 has_wage_garnishment: false,
                 max_safe_rent_35pct: 1400,
                 solvency_score: 98,
-                auditor_notes: "Expediente conjunto de 2 titulares (Matrimonio / Pareja). Contratos e ingresos verificados mediante CSV oficial sin embargos."
+                auditor_notes: "Expediente conjunto de 2 titulares (Matrimonio / Pareja). Coincidencia exacta de titularidad entre Vida Laboral y Nóminas validada mediante CSV oficial sin embargos."
             },
             {
                 id: "IC-339A1C",
@@ -965,43 +962,43 @@
                 has_wage_garnishment: false,
                 max_safe_rent_35pct: 868,
                 solvency_score: 95,
-                auditor_notes: "Titular individual. Nombramiento de funcionaria de carrera verificado con ingresos públicos garantizados."
-            },
-            {
-                id: "IC-712B9D",
-                alias_display: "Marcos T., Laura S. y Pedro T.",
-                search_zone: "Madrid Capital / Zona Sur / Pinto",
-                employment_category: "Indefinido + Sanidad [3T|Amigos / Compañeros|Titular 1 (Marcos T.): Indefinido - Consultor IT (4.8 años) ;; Titular 2 (Laura S.): Estatutaria Fija - Enfermera SERMAS (4.2 años) ;; Titular 3 (Pedro T.): Indefinido - Técnico Logística (3.1 años)]",
-                contract_code_tgss: "100 (x3)",
-                seniority_years: 4.8,
-                verified_net_income: 5100,
-                net_income_bracket_display: "4.900 € - 5.300 €/mes",
-                has_wage_garnishment: false,
-                max_safe_rent_35pct: 1785,
-                solvency_score: 99,
-                auditor_notes: "Expediente conjunto de 3 titulares firmantes con contratos indefinidos y estatutarios verificados mediante CSV."
+                auditor_notes: "Titular individual. Coincidencia documental verificada y nombramiento de funcionaria de carrera con ingresos públicos garantizados."
             }
         ];
 
-        const SYSTEM_PROMPT_MULTI_AUDITOR = `Eres un Auditor de Riesgo Financiero e Inmobiliario especializado en España. Analiza conjuntamente todos los documentos PDF aportados (pueden corresponder a 1 o varios titulares firmantes del contrato de alquiler) y devuelve EXCLUSIVAMENTE un objeto JSON estructurado y anonimizado (cumplimiento RGPD).
-        REGLAS:
-        1. ANONIMIZACIÓN MULTI-TITULAR: En alias_display pon los nombres de pila e inicial del primer apellido de todos los titulares unidos por "y" (ej: "Javier M. y María L."). NUNCA incluyas DNI ni NAF ni dirección.
-        2. DESGLOSE DE OCUPACIÓN Y CATEGORÍA DE CADA TITULAR: En el array members_breakdown incluye una línea clara por cada titular indicando su alias, su categoría laboral (Indefinido, Funcionario, Autónomo, Temporal), su ocupación o sector profesional y sus años de antigüedad (ejemplo: "Titular 1 (Javier M.): Indefinido - Ingeniero Industrial (8.5 años)").
-        3. SUMA DE INGRESOS: Suma el salario neto mensual ("Líquido a percibir") de TODOS los titulares aportados y pon el total en verified_net_income. Crea el rango en net_income_bracket_display.
-        4. SCORING Y ALQUILER MÁXIMO: Calcula solvency_score de 0 a 100. Calcula max_safe_rent_35pct como el 35% exacto de la suma total de ingresos netos.`;
+        // SYSTEM PROMPT RIGUROSO V13: PROHIBICIÓN ABSOLUTA DE DNI Y PENALIZACIÓN SEVERA DE SCORING SI NO COINCIDEN LOS DOCUMENTOS
+        const SYSTEM_PROMPT_MULTI_AUDITOR = `Eres un Auditor Forense de Riesgo Financiero e Inmobiliario en España sujeto al RGPD (Art. 5.1.c).
+        Analiza los documentos PDF aportados para los titulares firmantes y devuelve EXCLUSIVAMENTE un objeto JSON.
+
+        REGLAS LEGALES Y DE AUDITORÍA OBLIGATORIAS:
+        1. PROHIBICIÓN ESTRICTA DE DNI / NIE / NAF / IBAN: Bajo ningún concepto escribas números de DNI, NIE, pasaporte, NAF de la Seguridad Social, CIF ni nombres de empresas en ningún campo del JSON (tampoco en auditor_notes aunque expliques una discrepancia). Usa solo el nombre de pila e inicial del primer apellido (ej: "Carlos G.").
+        2. VERIFICACIÓN CRUZADA DE IDENTIDAD Y COHERENCIA:
+           - Para cada titular, comprueba internamente que el titular de la Vida Laboral y el titular de la Nómina sean la misma persona.
+           - Si los documentos aportados para un mismo titular pertenecen a personas distintas, o los DNI internos no coinciden entre su Vida Laboral y su Nómina, o se ha subido un documento que no es ni Vida Laboral ni Nómina, o existen discrepancias graves:
+             * Pon obligatoriamente "document_discrepancy_detected": true
+             * Pon obligatoriamente "verification_passed": false
+             * Pon obligatoriamente "fraud_risk_level": "HIGH"
+             * Pon un "solvency_score" MUY BAJO (entre 15 y 35 puntos máximo). ¡Jamás des un score positivo si hay discrepancias entre documentos!
+             * Explica en "auditor_notes" el motivo de la discrepancia SIN escribir ningún número de DNI/NIE.
+        3. CÁLCULO EXACTO DE SCORING CUANDO SÍ COINCIDEN:
+           - Solo si la identidad coincide y los documentos son coherentes ("document_discrepancy_detected": false):
+             * Indefinido > 2 años o Funcionario con CSV: 85 a 98 puntos.
+             * Indefinido reciente (< 1 año): 70 a 84 puntos.
+             * Temporal o sin CSV verificable: 45 a 65 puntos.
+        4. SUMA DE INGRESOS: Suma únicamente el salario neto mensual ("Líquido a percibir") de los documentos válidos y coherentes.`;
 
         const RESPONSE_SCHEMA = {
             type: "OBJECT",
             properties: {
                 alias_display: { type: "STRING" },
                 verification_passed: { type: "BOOLEAN" },
+                document_discrepancy_detected: { type: "BOOLEAN", description: "True si no coinciden los titulares entre Vida Laboral y Nómina o hay incoherencia documental" },
                 fraud_risk_level: { type: "STRING", enum: ["LOW", "MEDIUM", "HIGH"] },
                 csv_detected: { type: "BOOLEAN" },
-                employment_category: { type: "STRING", description: "Resumen corto global, ej: Indefinido + Funcionaria" },
+                employment_category: { type: "STRING" },
                 members_breakdown: {
                     type: "ARRAY",
-                    items: { type: "STRING" },
-                    description: "Lista detallada con la categoría laboral, ocupación y antigüedad de cada uno de los titulares del pasaporte"
+                    items: { type: "STRING" }
                 },
                 contract_code_tgss: { type: "STRING" },
                 seniority_years: { type: "NUMBER" },
@@ -1013,9 +1010,9 @@
                 auditor_notes: { type: "STRING" }
             },
             required: [
-                "alias_display", "verification_passed", "fraud_risk_level", "employment_category",
-                "members_breakdown", "seniority_years", "verified_net_income", "net_income_bracket_display",
-                "has_wage_garnishment", "max_safe_rent_35pct", "solvency_score", "auditor_notes"
+                "alias_display", "verification_passed", "document_discrepancy_detected", "fraud_risk_level",
+                "employment_category", "members_breakdown", "seniority_years", "verified_net_income",
+                "net_income_bracket_display", "has_wage_garnishment", "max_safe_rent_35pct", "solvency_score", "auditor_notes"
             ]
         };
 
@@ -1049,7 +1046,7 @@
         }
 
         // =========================================================================
-        // 3. GENERADOR DINÁMICO DE CASILLAS DE PDF + OCUPACIÓN POR CADA TITULAR
+        // 4. GENERADOR DINÁMICO DE CASILLAS DE PDF + OCUPACIÓN POR CADA TITULAR
         // =========================================================================
         function handleApplicantsChange() {
             const count = parseInt(document.getElementById('num-applicants-select').value, 10);
@@ -1070,42 +1067,42 @@
 
             for (let i = 1; i <= count; i++) {
                 html += `
-                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2.5">
-                    <div class="flex justify-between items-center border-b border-slate-200/80 pb-1.5">
-                        <span class="text-xs font-extrabold text-slate-800">
-                            <i class="fa-solid fa-user-tie text-emerald-600 mr-1"></i>Datos y Documentos del Titular ${i}
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                        <span class="text-sm font-bold text-slate-900">
+                            <i class="fa-solid fa-user-tie text-emerald-600 mr-1.5"></i>Datos y Documentos del Titular ${i}
                         </span>
-                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">Firmante ${i}</span>
+                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-md">Firmante ${i}</span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Categoría Laboral ${i}</label>
-                            <select id="cat-member-${i}" class="w-full bg-white border border-slate-200 rounded-xl p-2 text-[11px] font-bold text-slate-700">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Categoría Laboral ${i}</label>
+                            <select id="cat-member-${i}" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-slate-800">
                                 <option value="Indefinido" ${defaultCategories[i-1]==='Indefinido'?'selected':''}>Contrato Indefinido</option>
                                 <option value="Funcionario / Público" ${defaultCategories[i-1]==='Funcionario / Público'?'selected':''}>Funcionario / Público</option>
                                 <option value="Autónomo Consolidado">Autónomo Consolidado</option>
-                                <option value="Fijo Discontinuo / Temporal">Fijo Discontinuo / Otros</option>
+                                <option value="Fijo Discontinuo / Temporal">Fijo Discontinuo / Temporal</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Ocupación / Profesión ${i}</label>
-                            <input type="text" id="job-member-${i}" placeholder="Ej: Ingeniero, Docente..." value=""
-                                class="w-full bg-white border border-slate-200 rounded-xl p-2 text-[11px] font-semibold text-slate-800">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Ocupación / Profesión ${i}</label>
+                            <input type="text" id="job-member-${i}" placeholder="Ej: Ingeniero, Docente, Sanitario..." value=""
+                                class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs sm:text-sm font-medium text-slate-900">
                         </div>
                     </div>
 
                     <div class="space-y-1">
-                        <label class="block text-[11px] font-bold text-slate-700">Informe de Vida Laboral - Titular ${i} (PDF TGSS)</label>
+                        <label class="block text-xs font-bold text-slate-700">Informe de Vida Laboral - Titular ${i} (PDF Oficial)</label>
                         <input type="file" id="file-vl-${i}" accept="application/pdf" onchange="inspectPdfMetadata(this, 'meta-vl-${i}')"
-                            class="block w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 cursor-pointer border border-slate-200 bg-white rounded-xl p-1">
-                        <div id="meta-vl-${i}" class="text-[10px] text-slate-400 pl-1">Escáner forense de metadatos listo...</div>
+                            class="block w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 cursor-pointer border border-slate-300 bg-white rounded-xl p-1.5">
+                        <div id="meta-vl-${i}" class="text-xs text-slate-500 pl-1">Escáner forense de metadatos preparado.</div>
                     </div>
                     <div class="space-y-1">
-                        <label class="block text-[11px] font-bold text-slate-700">Última Nómina / Haberes - Titular ${i} (PDF)</label>
+                        <label class="block text-xs font-bold text-slate-700">Última Nómina o Certificado de Haberes - Titular ${i} (PDF)</label>
                         <input type="file" id="file-nom-${i}" accept="application/pdf" onchange="inspectPdfMetadata(this, 'meta-nom-${i}')"
-                            class="block w-full text-xs text-slate-500 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 cursor-pointer border border-slate-200 bg-white rounded-xl p-1">
-                        <div id="meta-nom-${i}" class="text-[10px] text-slate-400 pl-1">Escáner forense de metadatos listo...</div>
+                            class="block w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 cursor-pointer border border-slate-300 bg-white rounded-xl p-1.5">
+                        <div id="meta-nom-${i}" class="text-xs text-slate-500 pl-1">Escáner forense de metadatos preparado.</div>
                     </div>
                 </div>`;
             }
@@ -1113,19 +1110,21 @@
         }
 
         function packCategoryWithMeta(cleanCategory, numApplicants, relationship, membersArray) {
-            const clean = (cleanCategory || "Indefinido Verificado").replace(/\s*\[\d+T\|.*?\]/g, '').trim();
-            const joinedMembers = (membersArray && membersArray.length > 0) ? membersArray.join(" ;; ") : clean;
-            return `${clean} [${numApplicants}T|${relationship}|${joinedMembers}]`;
+            const clean = sanitizePII((cleanCategory || "Indefinido Verificado").replace(/\s*\[\d+T\|.*?\]/g, '').trim());
+            const sanitizedMembers = (membersArray && membersArray.length > 0) 
+                ? membersArray.map(m => sanitizePII(m)).join(" ;; ") 
+                : clean;
+            return `${clean} [${numApplicants}T|${relationship}|${sanitizedMembers}]`;
         }
 
         function unpackCategoryMeta(rawCategory) {
-            const str = rawCategory || "Indefinido Verificado";
+            const str = sanitizePII(rawCategory || "Indefinido Verificado");
             const match = str.match(/\[(\d+)T\|([^|\]]+)(?:\|([^\]]+))?\]/);
             if (match) {
                 const cleanCat = str.replace(match[0], '').trim();
                 const numApp = parseInt(match[1], 10) || 1;
                 const rel = match[2] || "Individual";
-                const rawMembers = match[3] ? match[3].split(" ;; ").map(s => s.trim()).filter(Boolean) : [cleanCat];
+                const rawMembers = match[3] ? match[3].split(" ;; ").map(s => sanitizePII(s.trim())).filter(Boolean) : [cleanCat];
                 return {
                     cleanCategory: cleanCat,
                     numApplicants: numApp,
@@ -1142,7 +1141,7 @@
         }
 
         // =========================================================================
-        // 4. GESTIÓN INTERNA DEL MODELO GEMINI
+        // 5. GESTIÓN INTERNA DEL MODELO GEMINI
         // =========================================================================
         function saveGeminiConfigLocally() {
             localStorage.setItem('ic_gemini_key', document.getElementById('api-key-input').value.trim());
@@ -1181,7 +1180,7 @@
         }
 
         // =========================================================================
-        // 5. CONEXIÓN SUPABASE Y NAVEGACIÓN (CON BOTÓN CENTRAL COMÚN)
+        // 6. CONEXIÓN SUPABASE (CON SANITIZACIÓN DE DATOS ANTIGUOS)
         // =========================================================================
         async function verifySupabaseStatusAndLoad() {
             const dot = document.getElementById('conn-dot');
@@ -1197,12 +1196,14 @@
                 if (error) throw error;
 
                 dot.className = "w-2 h-2 rounded-full bg-emerald-400 verified-pulse";
-                txt.innerText = "Cloud Activo";
+                txt.innerText = "Auditoría Activa";
 
                 if (data && data.length > 0) {
-                    const existingIds = new Set(data.map(d => d.id));
+                    // Sanitizar todos los registros cargados de la base de datos por si alguno antiguo tenía un DNI escrito
+                    const cleanedData = data.map(d => sanitizeRecordPII(d));
+                    const existingIds = new Set(cleanedData.map(d => d.id));
                     const extras = directoryProfiles.filter(p => !existingIds.has(p.id));
-                    directoryProfiles = [...data, ...extras];
+                    directoryProfiles = [...cleanedData, ...extras];
                 }
             } catch (e) {
                 dot.className = "w-2 h-2 rounded-full bg-amber-400";
@@ -1215,11 +1216,11 @@
                 document.getElementById(id).classList.add('hidden');
             });
 
-            const inactiveBtn = "py-1.5 px-1 rounded-lg text-slate-300 hover:text-white font-bold transition text-[10px] text-center";
-            const activeTenant = "py-1.5 px-1 rounded-lg bg-emerald-600 text-white font-bold transition text-[10px] text-center shadow";
-            const activeCenterPassport = "w-full py-1.5 px-1 rounded-lg bg-amber-400 text-slate-950 font-black transition text-[10px] text-center flex items-center justify-center space-x-1 shadow";
-            const inactiveCenterPassport = "w-full py-1.5 px-1 rounded-lg text-slate-200 hover:text-white font-extrabold transition text-[10px] text-center flex items-center justify-center space-x-1";
-            const activeLandlord = "w-full py-1.5 px-1 rounded-lg bg-indigo-600 text-white font-bold transition text-[10px] text-center shadow";
+            const inactiveBtn = "py-2 px-1.5 rounded-lg text-slate-300 hover:text-white font-semibold transition text-xs text-center";
+            const activeTenant = "py-2 px-1.5 rounded-lg bg-emerald-600 text-white font-bold transition text-xs text-center shadow";
+            const activeCenterPassport = "w-full py-2 px-2 rounded-lg bg-amber-400 text-slate-950 font-black transition text-xs text-center flex items-center justify-center space-x-1.5 shadow";
+            const inactiveCenterPassport = "w-full py-2 px-2 rounded-lg text-slate-200 hover:text-white font-bold transition text-xs text-center flex items-center justify-center space-x-1.5";
+            const activeLandlord = "w-full py-2 px-1.5 rounded-lg bg-indigo-600 text-white font-bold transition text-xs text-center shadow";
 
             document.getElementById('btn-tenant').className = view === 'tenant' ? activeTenant : inactiveBtn;
             document.getElementById('btn-inbox').className = view === 'inbox' ? activeTenant : inactiveBtn;
@@ -1231,7 +1232,7 @@
         }
 
         // =========================================================================
-        // 6. LÓGICA GRATIS VS PRO + REDIRECCIÓN ARAG
+        // 7. LÓGICA GRATIS VS PRO + REDIRECCIÓN ARAG
         // =========================================================================
         function openProModal() { document.getElementById('pro-modal').classList.remove('hidden'); }
         function closeProModal() { document.getElementById('pro-modal').classList.add('hidden'); }
@@ -1252,8 +1253,8 @@
             document.getElementById('upgrade-cta-bar').classList.add('hidden');
 
             const badgeTop = document.getElementById('plan-badge-top');
-            badgeTop.className = "text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full";
-            badgeTop.innerHTML = `<i class="fa-solid fa-crown mr-1"></i>PASAPORTE PRO ACTIVO (GRATIS por tiempo limitado)`;
+            badgeTop.className = "text-xs font-black uppercase tracking-wide bg-amber-400 text-slate-950 px-3 py-1 rounded-full";
+            badgeTop.innerHTML = `<i class="fa-solid fa-crown mr-1.5"></i>PASAPORTE PRO ACTIVO (GRATIS por tiempo limitado)`;
 
             if (!silent) {
                 alert("🎉 ¡Versión PRO Activada GRATIS!\n\nYa puedes copiar el enlace a tu pasaporte, compartirlo por WhatsApp, descargar el PDF y recibir ofertas de propietarios.");
@@ -1285,12 +1286,12 @@
             document.getElementById('upgrade-cta-bar').classList.remove('hidden');
 
             const badgeTop = document.getElementById('plan-badge-top');
-            badgeTop.className = "text-[10px] font-black uppercase tracking-wider bg-slate-800 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full";
-            badgeTop.innerHTML = `<i class="fa-solid fa-lock mr-1"></i>Versión Gratuita (Funciones Limitadas)`;
+            badgeTop.className = "text-xs font-bold uppercase tracking-wide bg-slate-800 text-amber-300 border border-amber-400/40 px-3 py-1 rounded-full";
+            badgeTop.innerHTML = `<i class="fa-solid fa-lock mr-1.5"></i>Versión Gratuita`;
         }
 
         // =========================================================================
-        // 7. AUDITORÍA MULTI-TITULAR (PRIORIDAD EDGE FUNCTION + RESETEO LIMPIO)
+        // 8. AUDITORÍA MULTI-TITULAR CON CONTROL ESTRICTO DE DISCREPANCIAS Y SIN DNI
         // =========================================================================
         function generateShortId() {
             const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -1311,15 +1312,15 @@
                 const suspicious = ['canva', 'photoshop', 'ilovepdf', 'sejda', 'gimp'];
                 if (suspicious.some(t => producer.includes(t) || creator.includes(t))) {
                     pdfTamperingDetected = true;
-                    log.className = "text-[10px] font-bold text-rose-600 pl-1";
-                    log.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>Alerta: Modificado con (${producer || creator}).`;
+                    log.className = "text-xs font-bold text-rose-600 pl-1";
+                    log.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>Alerta: PDF modificado con software de edición (${producer || creator}).`;
                 } else {
                     pdfTamperingDetected = false;
-                    log.className = "text-[10px] font-semibold text-emerald-700 pl-1";
+                    log.className = "text-xs font-semibold text-emerald-700 pl-1";
                     log.innerHTML = `<i class="fa-solid fa-shield-check mr-1"></i>Metadatos originales verificados.`;
                 }
             } catch (e) {
-                log.innerText = "PDF listo para análisis en RAM.";
+                log.innerText = "Documento listo para lectura en RAM.";
             }
         }
 
@@ -1336,8 +1337,8 @@
             consoleBox.classList.add('hidden');
             document.getElementById('log-2').classList.add('hidden');
             document.getElementById('log-3').classList.add('hidden');
-            document.getElementById('log-spinner').className = "fa-solid fa-spinner fa-spin mr-1.5";
-            document.getElementById('log-1-text').innerText = "Procesando PDFs en memoria RAM...";
+            document.getElementById('log-spinner').className = "fa-solid fa-spinner fa-spin mr-2";
+            document.getElementById('log-1-text').innerText = "Procesando documentos en memoria RAM...";
 
             document.getElementById('tenant-phone-input').value = "";
             renderDynamicApplicantsInputs();
@@ -1349,10 +1350,6 @@
                 return;
             }
 
-            const btnSubmit = document.getElementById('btn-submit-audit');
-            btnSubmit.disabled = true;
-            btnSubmit.classList.add('opacity-60');
-
             const numApplicants = parseInt(document.getElementById('num-applicants-select').value, 10) || 1;
             const relationship = document.getElementById('relationship-select').value || "Individual";
             const searchZone = document.getElementById('tenant-zone-input').value.trim() || "Valdemoro / Madrid Sur";
@@ -1363,7 +1360,7 @@
             const manualMembersList = [];
             const manualCategoriesSummary = [];
             const parts = [{
-                text: `Audita conjuntamente este expediente de alquiler formado por ${numApplicants} titular(es) firmante(s) con relación/parentesco: "${relationship}". Extrae la ocupación y categoría laboral de cada uno de los titulares en members_breakdown, suma los ingresos netos mensuales de todos y devuelve exclusivamente el JSON anonimizado.`
+                text: `Audita rigurosamente este expediente de alquiler de ${numApplicants} titular(es) firmante(s) con vínculo: "${relationship}". Verifica que la Vida Laboral y la Nómina de cada titular correspondan a la misma persona. Si hay discrepancias de titularidad o documentos que no coinciden, pon document_discrepancy_detected=true, verification_passed=false y solvency_score menor o igual a 35. PROHIBIDO incluir números de DNI/NIE/NAF en ningún campo de la respuesta.`
             }];
 
             let uploadedFilesCount = 0;
@@ -1378,7 +1375,7 @@
                 const fVL = document.getElementById(`file-vl-${i}`) ? document.getElementById(`file-vl-${i}`).files[0] : null;
                 const fNom = document.getElementById(`file-nom-${i}`) ? document.getElementById(`file-nom-${i}`).files[0] : null;
                 if (fVL) {
-                    parts.push({ text: `Vida Laboral del Titular ${i}:` });
+                    parts.push({ text: `Informe Vida Laboral del Titular ${i}:` });
                     parts.push({ inlineData: { mimeType: "application/pdf", data: await fileToBase64(fVL) } });
                     uploadedFilesCount++;
                 }
@@ -1389,12 +1386,16 @@
                 }
             }
 
+            const btnSubmit = document.getElementById('btn-submit-audit');
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-60');
+
             const consoleBox = document.getElementById('audit-console');
             consoleBox.classList.remove('hidden');
-            document.getElementById('log-spinner').className = "fa-solid fa-spinner fa-spin mr-1.5";
-            document.getElementById('log-1-text').innerText = "Procesando PDFs en memoria RAM...";
+            document.getElementById('log-spinner').className = "fa-solid fa-spinner fa-spin mr-2";
+            document.getElementById('log-1-text').innerText = "Verificando coherencia documental y filtrando datos sensibles...";
             document.getElementById('log-2').classList.remove('hidden');
-            document.getElementById('log-2').innerText = `Validando ${numApplicants} titular(es) con Edge Function segura...`;
+            document.getElementById('log-2').innerText = `Auditando ${numApplicants} titular(es) con motor forense v13...`;
 
             let auditData = null;
             const newId = generateShortId();
@@ -1427,7 +1428,7 @@
                                 systemInstruction: { parts: [{ text: SYSTEM_PROMPT_MULTI_AUDITOR }] },
                                 contents: [{ role: "user", parts: parts }],
                                 generationConfig: {
-                                    temperature: 0.1,
+                                    temperature: 0.0,
                                     responseMimeType: "application/json",
                                     responseSchema: RESPONSE_SCHEMA
                                 }
@@ -1454,6 +1455,9 @@
                 const simulatedAlias = numApplicants === 1 ? "Candidato Verificado" : `Expediente Conjunto (${numApplicants} Titulares)`;
                 auditData = {
                     alias_display: simulatedAlias,
+                    verification_passed: true,
+                    document_discrepancy_detected: false,
+                    fraud_risk_level: "LOW",
                     employment_category: manualCategoriesSummary.join(" + "),
                     members_breakdown: manualMembersList,
                     contract_code_tgss: numApplicants > 1 ? `100 (x${numApplicants})` : "100",
@@ -1462,14 +1466,39 @@
                     net_income_bracket_display: `${simulatedIncome - 200} € - ${simulatedIncome + 200} €/mes`,
                     has_wage_garnishment: false,
                     max_safe_rent_35pct: Math.round(simulatedIncome * 0.35),
-                    solvency_score: pdfTamperingDetected ? 48 : (numApplicants > 1 ? 98 : 95),
-                    auditor_notes: `Expediente verificado de ${numApplicants} titular(es) firmante(s) (${relationship}). Ocupaciones e ingresos netos conjuntos auditados sin embargos.`
+                    solvency_score: pdfTamperingDetected ? 30 : (numApplicants > 1 ? 96 : 94),
+                    auditor_notes: `Expediente verificado de ${numApplicants} titular(es) firmante(s) (${relationship}). Coherencia documental e ingresos netos conjuntos auditados sin embargos.`
                 };
             }
 
+            // =====================================================================
+            // REGLA DURA DE PENALIZACIÓN POR DISCREPANCIAS O MANIPULACIÓN DE PDF
+            // =====================================================================
+            let finalScore = Number(auditData.solvency_score) || 85;
+            const notesLower = (auditData.auditor_notes || "").toLowerCase();
+            const textIndicatesDiscrepancy = notesLower.includes("no coincid") || 
+                                             notesLower.includes("discrepancia") || 
+                                             notesLower.includes("distintas personas") || 
+                                             notesLower.includes("diferente titular") ||
+                                             notesLower.includes("incoherencia");
+
+            const hasDiscrepancy = Boolean(auditData.document_discrepancy_detected) || 
+                                   auditData.verification_passed === false || 
+                                   auditData.fraud_risk_level === "HIGH" || 
+                                   pdfTamperingDetected ||
+                                   textIndicatesDiscrepancy;
+
+            if (hasDiscrepancy) {
+                // Si los documentos no coinciden o hay alerta, el Score NUNCA puede superar 35/100
+                finalScore = Math.min(finalScore, 35);
+            }
+
+            // Sanitización estricta contra DNIs/NIEs en todos los textos devueltos por la IA
+            const cleanAlias = sanitizePII(auditData.alias_display || "Candidato Auditado");
+            const cleanNotes = sanitizePII(auditData.auditor_notes || "Auditoría documental completada.");
             const finalMembersBreakdown = (auditData.members_breakdown && auditData.members_breakdown.length > 0)
-                ? auditData.members_breakdown
-                : manualMembersList;
+                ? auditData.members_breakdown.map(m => sanitizePII(m))
+                : manualMembersList.map(m => sanitizePII(m));
 
             const packedCategory = packCategoryWithMeta(
                 auditData.employment_category || manualCategoriesSummary.join(" + "),
@@ -1481,17 +1510,18 @@
             const recordToSave = {
                 id: newId,
                 is_example: false,
-                search_zone: searchZone,
-                alias_display: auditData.alias_display || "Candidatos Verificados",
+                has_discrepancy: hasDiscrepancy,
+                search_zone: sanitizePII(searchZone),
+                alias_display: cleanAlias,
                 employment_category: packedCategory,
-                contract_code_tgss: auditData.contract_code_tgss || "100",
-                seniority_years: Number(auditData.seniority_years) || 5,
-                verified_net_income: Number(auditData.verified_net_income) || 3500,
-                net_income_bracket_display: auditData.net_income_bracket_display || "3.300 € - 3.700 €/mes",
+                contract_code_tgss: sanitizePII(auditData.contract_code_tgss || "100"),
+                seniority_years: Number(auditData.seniority_years) || 0,
+                verified_net_income: Number(auditData.verified_net_income) || 0,
+                net_income_bracket_display: sanitizePII(auditData.net_income_bracket_display || "Pendiente de validación"),
                 has_wage_garnishment: Boolean(auditData.has_wage_garnishment),
-                max_safe_rent_35pct: Number(auditData.max_safe_rent_35pct) || 1225,
-                solvency_score: Number(auditData.solvency_score) || 96,
-                auditor_notes: auditData.auditor_notes || `Expediente verificado (${numApplicants} titulares - ${relationship}).`
+                max_safe_rent_35pct: Number(auditData.max_safe_rent_35pct) || 0,
+                solvency_score: finalScore,
+                auditor_notes: cleanNotes
             };
 
             if (tenantPhone) {
@@ -1499,6 +1529,7 @@
                 currentTenantPhone = tenantPhone;
             }
 
+            // Solo añadir al catálogo público si no tiene discrepancias graves (o añadirlo con su score real bajo)
             directoryProfiles.unshift(recordToSave);
             if (sbClient) {
                 await sbClient.from('passports').insert([{
@@ -1513,15 +1544,16 @@
                     has_wage_garnishment: recordToSave.has_wage_garnishment,
                     max_safe_rent_35pct: recordToSave.max_safe_rent_35pct,
                     solvency_score: recordToSave.solvency_score,
-                    auditor_notes: recordToSave.auditor_notes
+                    auditor_notes: recordToSave.auditor_notes,
+                    fraud_risk_level: hasDiscrepancy ? "HIGH" : "LOW"
                 }]);
             }
             localStorage.setItem(`passport_${newId}`, JSON.stringify(recordToSave));
 
-            document.getElementById('log-spinner').className = "fa-solid fa-circle-check text-emerald-400 mr-1.5";
-            document.getElementById('log-1-text').innerText = "¡Auditoría completada!";
+            document.getElementById('log-spinner').className = "fa-solid fa-circle-check text-emerald-400 mr-2";
+            document.getElementById('log-1-text').innerText = "¡Auditoría finalizada y datos sensibles protegidos!";
             document.getElementById('log-3').classList.remove('hidden');
-            document.getElementById('log-3').innerHTML = `<i class="fa-solid fa-trash-can mr-1"></i>PDFs eliminados de RAM. Pasaporte #${newId} emitido.`;
+            document.getElementById('log-3').innerHTML = `<i class="fa-solid fa-trash-can mr-1.5"></i>PDFs eliminados de RAM. Pasaporte #${newId} emitido.`;
 
             resetToFreePlanUI();
             renderPassportUI(recordToSave);
@@ -1537,7 +1569,7 @@
         }
 
         // =========================================================================
-        // 8. CATÁLOGO DE PROPIETARIOS (OCUPACIÓN Y CATEGORÍA DE TODOS LOS MIEMBROS)
+        // 9. CATÁLOGO DE PROPIETARIOS (DISEÑO MÁS PROFESIONAL Y TEXTO MAYOR)
         // =========================================================================
         function renderDirectoryList() {
             const zoneQuery = (document.getElementById('filter-zone').value || "").toLowerCase();
@@ -1563,58 +1595,64 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-xs text-slate-500 border border-slate-200">No hay candidatos con esos filtros exactos. Prueba a cambiar el Nº de titulares o categoría.</div>`;
+                container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-sm text-slate-500 border border-slate-200">No hay candidatos con esos filtros exactos. Prueba a ampliar el Nº de titulares o categoría.</div>`;
                 return;
             }
 
             container.innerHTML = filtered.map(p => {
-                const meta = unpackCategoryMeta(p.employment_category);
-                const initials = (p.alias_display || "CV").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+                const cleanP = sanitizeRecordPII(p);
+                const meta = unpackCategoryMeta(cleanP.employment_category);
+                const initials = (cleanP.alias_display || "CV").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+                const isLowScore = cleanP.solvency_score < 60;
                 
+                const scoreBadgeClass = isLowScore
+                    ? "bg-rose-100 text-rose-800 border border-rose-200"
+                    : "bg-emerald-100 text-emerald-800 border border-emerald-200";
+
                 const membersBadgesHtml = meta.membersList.map(m => `
-                    <div class="flex items-start space-x-1.5 text-[11px] bg-slate-50 border border-slate-200/80 px-2.5 py-1.5 rounded-xl text-slate-700">
-                        <i class="fa-solid fa-user-check text-emerald-600 mt-0.5 text-[10px]"></i>
-                        <span class="font-semibold leading-tight">${m}</span>
+                    <div class="flex items-start space-x-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-700">
+                        <i class="fa-solid ${isLowScore ? 'fa-triangle-exclamation text-rose-500' : 'fa-user-check text-emerald-600'} mt-0.5 text-xs"></i>
+                        <span class="font-semibold leading-snug">${sanitizePII(m)}</span>
                     </div>
                 `).join('');
 
                 return `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-500 transition cursor-pointer" onclick='openProfileFromCatalog(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-center font-black text-emerald-800 text-sm shrink-0">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-500 transition cursor-pointer" onclick='openProfileFromCatalog(${JSON.stringify(cleanP).replace(/'/g, "&apos;")})'>
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-12 h-12 rounded-xl ${isLowScore ? 'bg-rose-50 border-rose-300 text-rose-800' : 'bg-emerald-50 border-emerald-300 text-emerald-800'} border flex items-center justify-center font-black text-base shrink-0">
                                 ${initials}
                             </div>
                             <div>
-                                <div class="flex flex-wrap items-center gap-1">
-                                    <h4 class="font-extrabold text-sm text-slate-900">${p.alias_display}</h4>
-                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                                        <i class="fa-solid fa-star text-[9px] mr-0.5 text-emerald-600"></i>Scoring ${p.solvency_score}
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <h4 class="font-extrabold text-base text-slate-900">${cleanP.alias_display}</h4>
+                                    <span class="${scoreBadgeClass} text-xs font-extrabold px-2.5 py-0.5 rounded-full">
+                                        Scoring ${cleanP.solvency_score}/100
                                     </span>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-1 mt-1">
-                                    <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold px-2 py-0.5 rounded">
+                                <div class="flex flex-wrap items-center gap-2 mt-1.5">
+                                    <span class="bg-indigo-50 text-indigo-800 border border-indigo-200 text-xs font-bold px-2.5 py-0.5 rounded-md">
                                         <i class="fa-solid fa-users mr-1"></i>${meta.numApplicants} ${meta.numApplicants === 1 ? 'Titular' : 'Titulares'} (${meta.relationship})
                                     </span>
-                                    <span class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-indigo-600 mr-0.5"></i>${p.search_zone}</span>
+                                    <span class="text-xs text-slate-600 font-medium"><i class="fa-solid fa-location-dot text-indigo-600 mr-1"></i>${cleanP.search_zone}</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-right shrink-0 ml-2">
-                            <span class="block text-[9px] font-bold uppercase text-slate-400">Alquiler Máx</span>
-                            <span class="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
-                                ${p.max_safe_rent_35pct} €/mes
+                        <div class="text-right shrink-0">
+                            <span class="block text-[10px] font-bold uppercase text-slate-400">Alquiler Máx</span>
+                            <span class="text-xs sm:text-sm font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 inline-block mt-0.5">
+                                ${cleanP.max_safe_rent_35pct} €/mes
                             </span>
                         </div>
                     </div>
 
-                    <div class="mt-3 space-y-1.5">
+                    <div class="mt-3.5 space-y-2">
                         ${membersBadgesHtml}
                     </div>
 
-                    <div class="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center text-[11px]">
-                        <span class="text-slate-500 font-medium">Ingreso neto conjunto: <strong class="text-slate-800">${p.net_income_bracket_display}</strong></span>
-                        <span class="text-indigo-600 font-extrabold shrink-0">Abrir Pasaporte <i class="fa-solid fa-chevron-right ml-0.5"></i></span>
+                    <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-slate-600">Ingreso neto conjunto: <strong class="text-slate-900">${cleanP.net_income_bracket_display}</strong></span>
+                        <span class="text-indigo-600 font-bold shrink-0">Ver Pasaporte <i class="fa-solid fa-chevron-right ml-1 text-xs"></i></span>
                     </div>
                 </div>`;
             }).join('');
@@ -1629,7 +1667,7 @@
         }
 
         // =========================================================================
-        // 9. CONTACTO PROPIETARIO -> WHATSAPP DIRECTO + BUZÓN PRIVADO
+        // 10. CONTACTO PROPIETARIO -> WHATSAPP DIRECTO + BUZÓN PRIVADO
         // =========================================================================
         function openContactModal() {
             document.getElementById('modal-tenant-name').innerText = document.getElementById('ui-alias').innerText;
@@ -1645,7 +1683,7 @@
             const extra = document.getElementById('landlord-extra').value.trim();
 
             if (!name || !phone || !prop) {
-                alert("Por favor, completa tu nombre, teléfono y los datos básicos del piso.");
+                alert("Por favor, completa tu nombre, teléfono y los datos básicos del inmueble.");
                 return;
             }
 
@@ -1689,7 +1727,7 @@
                 return;
             }
 
-            container.innerHTML = `<div class="text-xs text-slate-500 text-center py-4"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Consultando Buzón Privado en Supabase...</div>`;
+            container.innerHTML = `<div class="text-sm text-slate-500 text-center py-4"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Consultando Buzón Privado...</div>`;
 
             const { data, error } = await sbClient
                 .from('contact_requests')
@@ -1698,7 +1736,7 @@
                 .order('created_at', { ascending: false });
 
             if (error || !data || data.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-500 text-center py-5 bg-slate-50 rounded-2xl border border-slate-200">No hay ofertas registradas todavía para el Pasaporte <strong>#${rawId}</strong>.</div>`;
+                container.innerHTML = `<div class="text-sm text-slate-500 text-center py-6 bg-slate-50 rounded-xl border border-slate-200">No hay ofertas registradas todavía para el Pasaporte <strong>#${rawId}</strong>.</div>`;
                 return;
             }
 
@@ -1706,20 +1744,20 @@
             container.innerHTML = data.map(req => {
                 const passLink = `${baseUrl}?id=${rawId}`;
                 return `
-                <div class="bg-slate-900 border border-slate-800 text-white p-4 rounded-2xl space-y-2.5 shadow-md">
+                <div class="bg-slate-900 border border-slate-800 text-white p-4 rounded-xl space-y-2.5 shadow-sm">
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="text-[10px] bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded uppercase">Oferta de Propietario</span>
-                            <h4 class="font-extrabold text-sm mt-1">${req.landlord_name}</h4>
+                            <span class="text-xs bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded uppercase">Oferta de Propietario</span>
+                            <h4 class="font-bold text-base mt-1">${req.landlord_name}</h4>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-mono">#${req.passport_id}</span>
+                        <span class="text-xs text-slate-400 font-mono">#${req.passport_id}</span>
                     </div>
-                    <p class="text-xs text-emerald-300 leading-relaxed break-words">${req.property_zone_and_price}</p>
+                    <p class="text-xs sm:text-sm text-emerald-300 leading-relaxed break-words">${req.property_zone_and_price}</p>
                     <div class="pt-2 border-t border-slate-800 flex justify-end">
                         <a href="https://wa.me/34${req.landlord_phone.replace(/\s+/g, '')}?text=${encodeURIComponent(`Hola ${req.landlord_name}, hemos revisado en nuestro Buzón Privado de InquiCheck tu oferta (${req.property_zone_and_price}). Aquí tienes el enlace directo a nuestro Pasaporte de Solvencia (#${rawId}): ${passLink} . Te contactamos para avanzar y compartir la documentación.`)}" 
                            target="_blank"
-                           class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs px-3.5 py-2 rounded-xl transition flex items-center">
-                            <i class="fa-brands fa-whatsapp text-sm mr-1.5"></i>Responder al Propietario por WhatsApp
+                           class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition flex items-center">
+                            <i class="fa-brands fa-whatsapp text-base mr-1.5"></i>Responder por WhatsApp
                         </a>
                     </div>
                 </div>`;
@@ -1727,7 +1765,7 @@
         }
 
         // =========================================================================
-        // 10. RENDERIZADO DEL CERTIFICADO Y CALCULADORA
+        // 11. RENDERIZADO DEL CERTIFICADO (CON DETECCIÓN VISUAL DE DISCREPANCIAS)
         // =========================================================================
         async function loadPassportById(id) {
             const cleanId = id.replace('#', '');
@@ -1746,20 +1784,60 @@
             }
         }
 
-        function renderPassportUI(data) {
+        function renderPassportUI(rawData) {
+            const data = sanitizeRecordPII(rawData);
             currentPassportId = data.id;
             currentVerifiedIncome = data.verified_net_income || 3600;
             const meta = unpackCategoryMeta(data.employment_category);
             const initials = data.is_example ? "EJ" : (data.alias_display || "JM").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
 
+            // Detectar si el pasaporte tiene discrepancias o un score bajo (< 60)
+            const notesLower = (data.auditor_notes || "").toLowerCase();
+            const isDiscrepant = Boolean(data.has_discrepancy) || 
+                                 data.solvency_score < 60 || 
+                                 notesLower.includes("no coincid") || 
+                                 notesLower.includes("discrepancia");
+
             const exampleBanner = document.getElementById('example-warning-banner');
+            const headerBox = document.getElementById('cert-header-box');
+            const headerPillBox = document.getElementById('ui-header-pill-box');
+            const headerDot = document.getElementById('ui-header-dot');
             const headerPillText = document.getElementById('ui-header-pill-text');
+            const scoreBox = document.getElementById('ui-score-box');
+            const scoreLabel = document.getElementById('ui-score-label');
+            const scoreEl = document.getElementById('ui-score');
+            const auditorBox = document.getElementById('ui-auditor-box');
+
             if (data.is_example) {
                 exampleBanner.classList.remove('hidden');
-                headerPillText.innerText = "EJEMPLO DE AUDITORÍA IA + CSV";
             } else {
                 exampleBanner.classList.add('hidden');
-                headerPillText.innerText = "AUDITORÍA IA + CSV SUPERADA";
+            }
+
+            if (isDiscrepant && !data.is_example) {
+                // Diseño de Alerta Roja/Ámbar cuando los documentos no coinciden
+                headerBox.className = "bg-rose-950 text-white rounded-t-2xl p-5 sm:p-6 relative overflow-hidden shadow-md transition-colors";
+                headerPillBox.className = "inline-flex items-center space-x-2 bg-rose-800/90 border border-rose-400/50 px-3 py-1 rounded-full text-xs font-bold text-rose-100 mb-2.5";
+                headerDot.className = "w-2 h-2 rounded-full bg-rose-400";
+                headerPillText.innerText = "ALERTA: DISCREPANCIA DOCUMENTAL DETECTADA";
+
+                scoreBox.className = "text-right bg-rose-50 px-4 py-2.5 rounded-2xl border border-rose-300 shrink-0";
+                scoreLabel.className = "block text-[11px] font-bold uppercase text-rose-800";
+                scoreLabel.innerText = "Riesgo Alto";
+                scoreEl.className = "text-3xl font-black text-rose-600";
+                auditorBox.className = "bg-rose-50/70 border-l-4 border-rose-600 p-4 rounded-r-xl text-xs sm:text-sm text-rose-950 leading-relaxed";
+            } else {
+                // Diseño Verde Verificado cuando todo es coherente
+                headerBox.className = "bg-emerald-950 text-white rounded-t-2xl p-5 sm:p-6 relative overflow-hidden shadow-md transition-colors";
+                headerPillBox.className = "inline-flex items-center space-x-2 bg-emerald-800/80 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-semibold text-emerald-200 mb-2.5";
+                headerDot.className = "w-2 h-2 rounded-full bg-emerald-400 verified-pulse";
+                headerPillText.innerText = data.is_example ? "EJEMPLO DE AUDITORÍA IA + CSV" : "AUDITORÍA IA + CSV SUPERADA";
+
+                scoreBox.className = "text-right bg-emerald-50 px-4 py-2.5 rounded-2xl border border-emerald-200 shrink-0";
+                scoreLabel.className = "block text-[11px] font-bold uppercase text-emerald-800";
+                scoreLabel.innerText = "Scoring";
+                scoreEl.className = "text-3xl font-black text-emerald-600";
+                auditorBox.className = "bg-slate-50 border-l-4 border-emerald-600 p-4 rounded-r-xl text-xs sm:text-sm text-slate-700 leading-relaxed";
             }
 
             document.getElementById('ui-cert-id').innerText = `#${data.id}`;
@@ -1768,7 +1846,7 @@
             document.getElementById('ui-applicants-badge').innerHTML = `<i class="fa-solid fa-users mr-1"></i>${meta.numApplicants} ${meta.numApplicants === 1 ? 'Titular Firmante' : 'Titulares Firmantes'}`;
             document.getElementById('ui-relationship-badge').innerText = meta.relationship;
             document.getElementById('ui-zone').innerHTML = `<i class="fa-solid fa-location-dot mr-1 text-emerald-600"></i>Busca en: ${data.search_zone}`;
-            document.getElementById('ui-score').innerText = data.solvency_score;
+            scoreEl.innerText = data.solvency_score;
             document.getElementById('ui-auditor-notes').innerText = data.auditor_notes;
             document.getElementById('ui-category').innerText = meta.cleanCategory;
             document.getElementById('ui-ct-code').innerText = `Códigos TGSS: ${data.contract_code_tgss || '100'}`;
@@ -1779,9 +1857,9 @@
 
             const breakdownContainer = document.getElementById('ui-members-breakdown');
             breakdownContainer.innerHTML = meta.membersList.map(item => `
-                <div class="flex items-center space-x-2 bg-white px-3 py-2 rounded-xl border border-slate-200/90 text-xs">
-                    <i class="fa-solid fa-circle-check text-emerald-600 shrink-0"></i>
-                    <span class="font-bold text-slate-800">${item}</span>
+                <div class="flex items-center space-x-2.5 bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm">
+                    <i class="fa-solid ${isDiscrepant && !data.is_example ? 'fa-circle-exclamation text-rose-600' : 'fa-circle-check text-emerald-600'} shrink-0"></i>
+                    <span class="font-bold text-slate-800">${sanitizePII(item)}</span>
                 </div>
             `).join('');
 
@@ -1809,25 +1887,34 @@
 
         function calculateEffort() {
             const rent = parseFloat(document.getElementById('rent-input').value) || 0;
-            const effort = ((rent / currentVerifiedIncome) * 100).toFixed(1);
             const resultEl = document.getElementById('effort-result');
             const badgeEl = document.getElementById('insurance-badge');
 
+            if (!currentVerifiedIncome || currentVerifiedIncome <= 0) {
+                resultEl.innerText = "No Verificado";
+                resultEl.className = "text-base sm:text-lg font-black text-rose-400";
+                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-rose-950/90 border border-rose-600/50 text-rose-200 p-3 rounded-xl flex items-center";
+                badgeEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-base mr-2.5 text-rose-400"></i><span><strong>INGRESOS NO VERIFICADOS:</strong> Existen discrepancias en los documentos aportados.</span>';
+                return;
+            }
+
+            const effort = ((rent / currentVerifiedIncome) * 100).toFixed(1);
+
             if (effort <= 30) {
                 resultEl.innerText = effort + "% (Óptimo)";
-                resultEl.className = "text-base font-black text-emerald-400";
-                badgeEl.className = "mt-3 text-xs bg-emerald-950/90 border border-emerald-600/50 text-emerald-300 p-2.5 rounded-xl flex items-center";
-                badgeEl.innerHTML = '<i class="fa-solid fa-check-double text-base mr-2 text-emerald-400"></i><span><strong>APTO PARA SEGURO DE IMPAGO:</strong> Cumple holgadamente el requisito (menor al 35%).</span>';
+                resultEl.className = "text-base sm:text-lg font-black text-emerald-400";
+                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-emerald-950/90 border border-emerald-600/50 text-emerald-200 p-3 rounded-xl flex items-center";
+                badgeEl.innerHTML = '<i class="fa-solid fa-check-double text-base mr-2.5 text-emerald-400"></i><span><strong>APTO PARA SEGURO DE IMPAGO:</strong> Cumple holgadamente el requisito (menor al 35%).</span>';
             } else if (effort <= 35) {
                 resultEl.innerText = effort + "% (Viable)";
-                resultEl.className = "text-base font-black text-amber-400";
-                badgeEl.className = "mt-3 text-xs bg-amber-950/90 border border-amber-600/50 text-amber-300 p-2.5 rounded-xl flex items-center";
-                badgeEl.innerHTML = '<i class="fa-solid fa-circle-check text-base mr-2 text-amber-400"></i><span><strong>DENTRO DE LÍMITE:</strong> Aceptado por aseguradoras (máx. 35%).</span>';
+                resultEl.className = "text-base sm:text-lg font-black text-amber-400";
+                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-amber-950/90 border border-amber-600/50 text-amber-200 p-3 rounded-xl flex items-center";
+                badgeEl.innerHTML = '<i class="fa-solid fa-circle-check text-base mr-2.5 text-amber-400"></i><span><strong>DENTRO DE LÍMITE:</strong> Aceptado por aseguradoras (máx. 35%).</span>';
             } else {
                 resultEl.innerText = effort + "% (Excesivo)";
-                resultEl.className = "text-base font-black text-rose-400";
-                badgeEl.className = "mt-3 text-xs bg-rose-950/90 border border-rose-600/50 text-rose-300 p-2.5 rounded-xl flex items-center";
-                badgeEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-base mr-2 text-rose-400"></i><span><strong>RIESGO ALTO:</strong> Supera el 35% de los ingresos netos conjuntos.</span>';
+                resultEl.className = "text-base sm:text-lg font-black text-rose-400";
+                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-rose-950/90 border border-rose-600/50 text-rose-200 p-3 rounded-xl flex items-center";
+                badgeEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-base mr-2.5 text-rose-400"></i><span><strong>RIESGO ALTO:</strong> Supera el 35% de los ingresos netos conjuntos.</span>';
             }
         }
 
