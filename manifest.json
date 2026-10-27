@@ -1,24 +1,42 @@
 {
-  "name": "InquiCheck | Pasaporte Oficial de Solvencia",
+  "id": "es.inquicheck.twa",
+  "name": "InquiCheck: Pasaporte de Solvencia",
   "short_name": "InquiCheck",
-  "description": "Certificado de solvencia para inquilinos y catálogo pre-auditado para propietarios bajo normativa RGPD.",
+  "description": "Certificado oficial de solvencia para alquiler y catálogo de inquilinos pre-auditados bajo normativa RGPD.",
+  "lang": "es-ES",
+  "dir": "ltr",
   "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "orientation": "portrait-primary",
+  "categories": ["finance", "business", "utilities"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23022c22'/><path d='M256 72L104 136v120c0 105.6 64.8 202.4 152 232 87.2-29.6 152-126.4 152-232V136L256 72z' fill='%2310b981'/><path d='M232 328l-68-68 28.3-28.3L232 271.4l95.7-95.7L356 204 232 328z' fill='%23ffffff'/></svg>",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23022c22'/><path d='M256 72L104 136v120c0 105.6 64.8 202.4 152 232 87.2-29.6 152-126.4 152-232V136L256 72z' fill='%2310b981'/><path d='M232 328l-68-68 28.3-28.3L232 271.4l95.7-95.7L356 204 232 328z' fill='%23ffffff'/></svg>",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
