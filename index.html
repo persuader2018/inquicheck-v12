@@ -3,530 +3,800 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#1e293b">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="InquiCheck">
-    <title>InquiCheck v13 | Pasaporte Oficial de Solvencia</title>
+    <title>InquiCheck v15 | Pasaporte Oficial de Solvencia</title>
     
-    <!-- PWA Manifest e Icono Oficial Vectorial -->
+    <!-- PWA Manifest e Iconos -->
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23022c22'/><path d='M256 72L104 136v120c0 105.6 64.8 202.4 152 232 87.2-29.6 152-126.4 152-232V136L256 72z' fill='%2310b981'/><path d='M232 328l-68-68 28.3-28.3L232 271.4l95.7-95.7L356 204 232 328z' fill='%23ffffff'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%23022c22'/><path d='M256 72L104 136v120c0 105.6 64.8 202.4 152 232 87.2-29.6 152-126.4 152-232V136L256 72z' fill='%2310b981'/><path d='M232 328l-68-68 28.3-28.3L232 271.4l95.7-95.7L356 204 232 328z' fill='%23ffffff'/></svg>">
+    <link rel="icon" type="image/png" href="/icon-192.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        /* Fondo en tonos pastel más intensos para dar mayor contraste a las tarjetas blancas */
         body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            background-color: #f8fafc; 
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: linear-gradient(180deg, #dce2f5 0%, #e2e7f7 50%, #d8e0f2 100%);
             color: #0f172a;
             -webkit-font-smoothing: antialiased;
         }
-        .verified-pulse { animation: pulse-green 2s infinite; }
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+
+        /* Tarjetas blancas con mayor contraste de borde y sombra */
+        .pwa-card {
+            background: #ffffff;
+            border-radius: 26px;
+            box-shadow: 0 14px 34px -8px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+            border: 1.5px solid #cbd5e1;
         }
+
+        /* Contorno Oficial diferenciado para el Documento del Pasaporte */
+        .passport-official-frame {
+            background: #ffffff;
+            border-radius: 24px;
+            border: 3px solid #0f172a;
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.22);
+            position: relative;
+        }
+        .passport-inner-border {
+            border: 1.5px solid #94a3b8;
+            border-radius: 16px;
+            margin: 10px;
+            padding: 18px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        /* Botón principal oscuro de alto contraste */
+        .btn-pwa-dark {
+            background-color: #1e202a;
+            color: #ffffff;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 20px -4px rgba(30, 32, 42, 0.35);
+        }
+        .btn-pwa-dark:hover {
+            background-color: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        /* Botón secundario con mayor contraste en tono pastel */
+        .btn-pwa-outline {
+            background-color: #eef2ff;
+            color: #312e81;
+            border: 2px solid #4f46e5;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+        }
+        .btn-pwa-outline:hover {
+            background-color: #e0e7ff;
+        }
+
+        /* Anillo de progreso SVG */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
         .blur-lock { filter: blur(5px); user-select: none; pointer-events: none; }
+
+        /* =====================================================================
+           CONFIGURACIÓN DE IMPRESIÓN EXACTA EN 1 SOLA CARA DE HOJA A4
+           ===================================================================== */
+        @page {
+            size: A4 portrait;
+            margin: 8mm;
+        }
         @media print {
-            body { background-color: white; }
-            #admin-navbar, #share-banner, #landlord-bottom-cta, #example-warning-banner, footer, .no-print { display: none !important; }
-            .print-container { box-shadow: none !important; border: none !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+            html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+            }
+            #admin-navbar, 
+            #share-banner, 
+            #example-warning-banner, 
+            #post-passport-controls,
+            #view-tenant,
+            #view-directory,
+            #view-inbox,
+            #view-landlord-actions,
+            footer, 
+            .no-print { 
+                display: none !important; 
+            }
+            main {
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            #view-landlord {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #printable-passport-document {
+                box-shadow: none !important;
+                border: 2.5px solid #0f172a !important;
+                border-radius: 16px !important;
+                width: 100% !important;
+                max-width: 190mm !important;
+                margin: 0 auto !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .passport-inner-border {
+                margin: 6px !important;
+                padding: 14px !important;
+            }
         }
     </style>
 </head>
-<body class="pb-12 flex flex-col min-h-screen">
+<body class="pb-14 flex flex-col min-h-screen">
 
     <!-- ==========================================
-         BARRA DE NAVEGACIÓN SUPERIOR (DISEÑO PROFESIONAL Y TEXTO MÁS LEGIBLE)
+         CABECERA CON MAYOR CONTRASTE EN BOTONES Y FONDOS PASTEL
          ========================================== -->
-    <div id="admin-navbar" class="bg-slate-900 text-white pt-3 pb-3 px-3 sticky top-0 z-40 shadow-md border-b border-slate-800">
-        <div class="max-w-lg mx-auto">
-            <div class="flex justify-between items-center mb-2.5 px-1">
-                <!-- 5 clics en el logo abren el ajuste oculto de administrador -->
-                <span onclick="handleSecretAdminClick()" class="font-extrabold text-white flex items-center text-base tracking-tight cursor-pointer select-none">
-                    <i class="fa-solid fa-shield-halved text-emerald-400 mr-2 text-lg"></i>InquiCheck 
-                    <span class="text-xs bg-slate-800 text-emerald-300 px-2 py-0.5 rounded-md ml-2 font-mono border border-slate-700">v13</span>
-                </span>
+    <header id="admin-navbar" class="bg-white sticky top-0 z-40 border-b-2 border-slate-300 shadow-md">
+        <div class="max-w-lg mx-auto px-4 pt-3 pb-3">
+            
+            <!-- Fila Superior: Logo + Estado Cloud + Instalar App -->
+            <div class="flex justify-between items-center mb-3">
+                <div onclick="handleSecretAdminClick()" class="flex items-center space-x-2.5 cursor-pointer select-none">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-950 flex items-center justify-center shadow-sm border border-emerald-500/40">
+                        <i class="fa-solid fa-shield-halved text-emerald-400 text-base"></i>
+                    </div>
+                    <div class="leading-none">
+                        <span class="font-extrabold text-lg tracking-tight text-slate-900 block">InquiCheck <span class="text-xs font-mono text-indigo-700">v15</span></span>
+                        <span class="text-[11px] font-extrabold text-indigo-700 tracking-wide">PASAPORTE DE SOLVENCIA</span>
+                    </div>
+                </div>
                 
                 <div class="flex items-center space-x-2">
-                    <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow transition flex items-center">
-                        <i class="fa-solid fa-download mr-1.5"></i>Instalar App
+                    <button id="pwa-install-btn" onclick="triggerPwaInstall()" class="hidden btn-pwa-dark text-xs font-bold px-3.5 py-1.5 flex items-center">
+                        <i class="fa-solid fa-download mr-1.5 text-emerald-400"></i>Instalar App
                     </button>
-                    <div id="connection-indicator" class="flex items-center space-x-2 bg-slate-800 border border-slate-700 px-3 py-1 rounded-full text-xs">
-                        <span id="conn-dot" class="w-2 h-2 rounded-full bg-emerald-400 verified-pulse"></span>
-                        <span id="conn-text" class="text-slate-200 font-medium">Auditoría Activa</span>
+                    <div id="connection-indicator" class="flex items-center space-x-1.5 bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-full text-xs">
+                        <span id="conn-dot" class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        <span id="conn-text" class="text-emerald-950 font-extrabold">Cloud Activo</span>
                     </div>
                 </div>
             </div>
 
-            <!-- NAVEGACIÓN EN 3 BLOQUES CLAROS -->
-            <div class="grid grid-cols-12 gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 items-stretch">
+            <!-- Navegación Segmentada con Mayor Contraste Visual -->
+            <div class="grid grid-cols-12 gap-1.5 bg-slate-200/90 p-1.5 rounded-2xl border border-slate-300">
                 
-                <!-- Izquierda: Área Inquilinos (5 columnas) -->
-                <div class="col-span-5 bg-slate-900 p-1.5 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 text-center mb-1">
-                        <i class="fa-solid fa-user-check mr-1"></i>Inquilinos
+                <!-- Izquierda: Inquilinos -->
+                <div class="col-span-5 flex flex-col">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-700 text-center mb-1">
+                        <i class="fa-solid fa-user-check text-emerald-700 mr-0.5"></i>Inquilinos
                     </span>
-                    <div class="grid grid-cols-2 gap-1">
-                        <button onclick="switchView('tenant')" id="btn-tenant" class="py-2 px-1.5 rounded-lg bg-emerald-600 text-white font-bold transition text-xs text-center shadow">
+                    <div class="grid grid-cols-2 gap-1 bg-slate-300/70 p-1 rounded-xl">
+                        <button onclick="switchView('tenant')" id="btn-tenant" class="py-2 px-1.5 rounded-lg bg-slate-900 text-white font-extrabold transition text-xs text-center shadow">
                             Crear
                         </button>
-                        <button onclick="switchView('inbox')" id="btn-inbox" class="py-2 px-1.5 rounded-lg text-slate-300 hover:text-white font-semibold transition text-xs text-center">
+                        <button onclick="switchView('inbox')" id="btn-inbox" class="py-2 px-1.5 rounded-lg bg-white/80 text-slate-800 hover:bg-white font-bold transition text-xs text-center border border-slate-300/80">
                             Buzón
                         </button>
                     </div>
                 </div>
 
-                <!-- Centro: ZONA COMÚN - VER PASAPORTE (4 columnas) -->
-                <div class="col-span-4 bg-slate-900 p-1.5 rounded-xl border border-amber-500/30 flex flex-col justify-between">
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-300 text-center mb-1">
-                        <i class="fa-solid fa-id-card mr-1"></i>Común
+                <!-- Centro: Pasaporte (Común) -->
+                <div class="col-span-4 flex flex-col">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-800 text-center mb-1">
+                        <i class="fa-solid fa-certificate text-indigo-700 mr-0.5"></i>Documento
                     </span>
-                    <button onclick="switchView('landlord')" id="btn-landlord" class="w-full py-2 px-2 rounded-lg text-slate-200 hover:text-white font-bold transition text-xs text-center flex items-center justify-center space-x-1.5">
-                        <i class="fa-solid fa-certificate text-amber-400 text-xs"></i>
-                        <span>Pasaporte</span>
-                    </button>
+                    <div class="bg-indigo-200/70 p-1 rounded-xl h-full flex">
+                        <button onclick="switchView('landlord')" id="btn-landlord" class="w-full py-2 px-2 rounded-lg bg-white/90 text-indigo-950 hover:bg-white font-extrabold transition text-xs text-center flex items-center justify-center space-x-1 border border-indigo-300">
+                            <i class="fa-solid fa-id-card text-indigo-700 text-xs"></i>
+                            <span>Pasaporte</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Derecha: Área Propietarios (3 columnas) -->
-                <div class="col-span-3 bg-slate-900 p-1.5 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-indigo-300 text-center mb-1">
-                        <i class="fa-solid fa-building-user mr-1"></i>Caseros
+                <!-- Derecha: Propietarios -->
+                <div class="col-span-3 flex flex-col">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-700 text-center mb-1">
+                        <i class="fa-solid fa-building-user text-indigo-700 mr-0.5"></i>Caseros
                     </span>
-                    <button onclick="switchView('directory')" id="btn-directory" class="w-full py-2 px-1.5 rounded-lg text-slate-300 hover:text-white font-semibold transition text-xs text-center">
-                        Catálogo
-                    </button>
+                    <div class="bg-slate-300/70 p-1 rounded-xl h-full flex">
+                        <button onclick="switchView('directory')" id="btn-directory" class="w-full py-2 px-1.5 rounded-lg bg-white/80 text-slate-800 hover:bg-white font-bold transition text-xs text-center border border-slate-300/80">
+                            Catálogo
+                        </button>
+                    </div>
                 </div>
 
             </div>
         </div>
-    </div>
+    </header>
 
-    <main class="flex-grow">
-        <!-- ==========================================
-             VISTA 1 (POR DEFECTO AL ENTRAR): CREAR PASAPORTE MULTI-TITULAR
-             ========================================== -->
-        <div id="view-tenant" class="max-w-lg mx-auto mt-4 px-3.5">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-5 sm:p-6 space-y-5">
+    <main class="flex-grow max-w-lg w-full mx-auto px-4 pt-5 space-y-5">
+
+        <!-- =========================================================
+             VISTA 1: PESTAÑA "CREAR" (DIVIDIDA EN 2 SUB-PANTALLAS)
+             ========================================================= -->
+        <div id="view-tenant" class="space-y-5">
+            
+            <!-- SUB-PANTALLA 1A: PANTALLA INFORMATIVA DE INICIO (IMPACTO Y EXPLICACIÓN) -->
+            <div id="tenant-step-intro" class="space-y-4">
                 
-                <div class="border-b border-slate-100 pb-4">
-                    <div class="flex justify-between items-center flex-wrap gap-2">
-                        <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full">
-                            <i class="fa-solid fa-user-check mr-1"></i>Área de Inquilinos
+                <div class="pwa-card p-6 space-y-5">
+                    <!-- Badge superior -->
+                    <div class="flex justify-between items-center">
+                        <span class="inline-flex items-center space-x-1.5 bg-indigo-100 border border-indigo-300 text-indigo-900 text-xs font-extrabold px-3.5 py-1 rounded-full">
+                            <i class="fa-solid fa-award text-indigo-700"></i>
+                            <span>Estándar Oficial de Solvencia RGPD</span>
                         </span>
-                        <button onclick="openPrivacyModal()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center">
-                            <i class="fa-solid fa-scale-balanced mr-1.5"></i>Garantía Legal RGPD
-                        </button>
+                        <span class="text-xs font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-full">Gratis</span>
                     </div>
-                    <h2 class="text-xl font-extrabold text-slate-900 mt-3">Crear Pasaporte de Solvencia</h2>
-                    <p class="text-sm text-slate-600 mt-1 leading-relaxed">
-                        Acredita tus ingresos y estabilidad laboral (individual o en pareja/grupo) con validez oficial y sin entregar copias de tu DNI ni tus nóminas a desconocidos.
-                    </p>
-                </div>
 
-                <!-- BLOQUE DESTACADO DE TRANSPARENCIA Y PROTECCIÓN DE DATOS -->
-                <div onclick="openPrivacyModal()" class="bg-emerald-50/70 hover:bg-emerald-50 border border-emerald-200 p-4 rounded-xl cursor-pointer transition flex items-start space-x-3.5">
-                    <div class="bg-emerald-600 text-white w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                        <i class="fa-solid fa-user-lock text-base"></i>
-                    </div>
-                    <div class="text-xs sm:text-sm">
-                        <span class="font-bold text-emerald-950 block">Protocolo de Custodia Cero y Ocultación de DNI</span>
-                        <p class="text-xs text-emerald-900 mt-1 leading-relaxed">
-                            Tus PDFs <strong>no se almacenan en ningún servidor</strong>. Se analizan en memoria RAM volátil durante 5 segundos y se destruyen automáticamente. Nuestro cortafuegos bloquea cualquier publicación de tu DNI, NIE o cuenta bancaria. <span class="underline font-bold">Ver certificado legal →</span>
+                    <!-- Titular de Impacto -->
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                            Consigue el piso que quieres sin regalar tus datos
+                        </h1>
+                        <p class="text-sm text-slate-700 mt-2.5 leading-relaxed font-medium">
+                            Los propietarios reciben más de 100 mensajes por cada anuncio en Idealista, pero desconfían de documentos editados y tú corres peligro de suplantación de identidad al enviar tu DNI por WhatsApp.
                         </p>
                     </div>
-                </div>
 
-                <!-- Paso 1: Zona y WhatsApp privado -->
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-800 mb-1.5">1. ¿En qué municipio o zona buscáis vivienda?</label>
-                        <input type="text" id="tenant-zone-input" placeholder="Ej: Valdemoro / Madrid Sur / Alcázar" value="Valdemoro / Madrid Sur" 
-                            class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium text-slate-900 focus:bg-white focus:outline-none focus:border-emerald-600">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-800 mb-1.5">
-                            2. WhatsApp para avisos de propietarios <span class="text-xs font-normal text-emerald-700">(Privado y oculto en el catálogo)</span>
-                        </label>
-                        <input type="tel" id="tenant-phone-input" placeholder="Ej: 600 123 456" 
-                            class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-medium text-slate-900 focus:bg-white focus:outline-none focus:border-emerald-600">
-                    </div>
-                </div>
-
-                <!-- Paso 2: Número de Titulares con Ingresos y Relación / Parentesco -->
-                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-bold text-slate-900"><i class="fa-solid fa-users text-indigo-600 mr-1.5"></i>3. Titulares que firmarán el contrato</span>
-                        <span class="text-xs bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold px-2.5 py-0.5 rounded-md">Suma de Ingresos</span>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Nº Personas con Ingresos</label>
-                            <select id="num-applicants-select" onchange="handleApplicantsChange()" 
-                                class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-indigo-500">
-                                <option value="1">1 Titular (Individual)</option>
-                                <option value="2" selected>2 Titulares (Pareja / Dos firmantes)</option>
-                                <option value="3">3 Titulares Firmantes</option>
-                                <option value="4">4 Titulares Firmantes</option>
-                            </select>
+                    <!-- RECUADRO VERDE ORIGINAL RESTAURADO (PROTOCOLO DE CUSTODIA CERO Y OCULTACIÓN DE DNI) -->
+                    <div onclick="openPrivacyModal()" class="bg-emerald-100/80 hover:bg-emerald-100 border-2 border-emerald-300 p-4 rounded-2xl cursor-pointer transition flex items-start space-x-3.5 shadow-sm">
+                        <div class="bg-emerald-600 text-white w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow">
+                            <i class="fa-solid fa-user-lock text-base"></i>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Relación o Vínculo</label>
-                            <select id="relationship-select" 
-                                class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-indigo-500">
-                                <option value="Individual">Único titular (Individual)</option>
-                                <option value="Matrimonio / Pareja" selected>Matrimonio / Pareja</option>
-                                <option value="Amigos / Compañeros">Amigos / Compañeros de piso</option>
-                                <option value="Padre/Madre e Hijo/a">Padre/Madre e Hijo/a</option>
-                                <option value="Hermanos/as">Hermanos/as</option>
-                                <option value="Otros Familiares">Otros Familiares / Avalistas</option>
-                            </select>
+                        <div class="text-xs sm:text-sm">
+                            <span class="font-extrabold text-emerald-950 block text-sm">Protocolo de Custodia Cero y Ocultación de DNI</span>
+                            <p class="text-xs text-emerald-900 mt-1 leading-relaxed font-medium">
+                                Tus PDFs <strong>no se almacenan en ningún servidor</strong>. Se analizan en memoria RAM volátil durante 5 segundos y se destruyen automáticamente. Nuestro cortafuegos bloquea cualquier publicación de tu DNI, NIE o cuenta bancaria. <span class="underline font-extrabold">Ver certificado legal →</span>
+                            </p>
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE AYUDA PARA DESCARGAR LA VIDA LABORAL -->
-                    <div class="bg-white border border-slate-200 p-3 rounded-xl flex items-center justify-between gap-2">
-                        <div class="text-xs text-slate-700 leading-snug">
-                            <i class="fa-solid fa-circle-info text-indigo-600 mr-1"></i>¿No tienes el PDF de tu <strong>Vida Laboral</strong>?
+                    <!-- 3 Beneficios Clave con contraste pastel -->
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-indigo-50/90 border border-indigo-200 p-3.5 rounded-2xl flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-xs mt-0.5">1</div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Destaca al instante en Idealista y Fotocasa</h3>
+                                <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">Pega el enlace de tu Pasaporte en el chat del anuncio. El propietario verá al instante que eres apto para seguro de impago.</p>
+                            </div>
                         </div>
-                        <button type="button" onclick="openVidaLaboralModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 font-bold text-xs px-3 py-1.5 rounded-lg shrink-0 transition">
-                            Solicitar en la Seg. Social →
+
+                        <div class="bg-indigo-50/90 border border-indigo-200 p-3.5 rounded-2xl flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-xs mt-0.5">2</div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Individual, en Pareja o Varios Titulares</h3>
+                                <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">Suma los ingresos netos de todos los firmantes (parejas, amigos o familiares) y muestra la ocupación verificada de cada uno.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-indigo-50/90 border border-indigo-200 p-3.5 rounded-2xl flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-xs mt-0.5">3</div>
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">Validación Forense de Vida Laboral (CSV) y Nómina</h3>
+                                <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">Obtén tu Scoring de 0 a 100 y entra en el catálogo donde los propietarios buscan inquilinos sin publicar su piso.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botón Principal para pasar a la pantalla de creación -->
+                    <div class="pt-1 space-y-2.5">
+                        <button type="button" onclick="showTenantFormScreen()" class="w-full btn-pwa-dark font-extrabold py-4 px-6 text-base flex items-center justify-center space-x-2.5">
+                            <i class="fa-solid fa-file-shield text-emerald-400"></i>
+                            <span>Crear mi Pasaporte de Solvencia Ahora</span>
+                            <i class="fa-solid fa-arrow-right text-sm"></i>
+                        </button>
+
+                        <button type="button" onclick="switchView('landlord')" class="w-full btn-pwa-outline font-extrabold py-3 px-4 text-xs sm:text-sm flex items-center justify-center space-x-2">
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ver primero un Pasaporte de Ejemplo</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Contenedor Dinámico de Subida de PDFs + Ocupación de cada Titular -->
-                <div id="dynamic-applicants-docs" class="space-y-4"></div>
+            </div>
 
-                <!-- CASILLA DE CONSENTIMIENTO EXPLÍCITO RGPD -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                    <label class="flex items-start space-x-3 cursor-pointer">
-                        <input type="checkbox" id="rgpd-consent-check" checked class="mt-1 w-4 h-4 accent-emerald-600 rounded">
-                        <span class="text-xs text-slate-600 leading-relaxed">
-                            <strong class="text-slate-800">Consentimiento Explícito (Art. 6.1.a RGPD):</strong> Autorizo el análisis automatizado en memoria volátil de los documentos aportados para emitir el certificado anonimizado de solvencia, confirmando que los datos son veraces y que los archivos se destruyen en el acto.
-                            <button type="button" onclick="openPrivacyModal()" class="text-emerald-700 font-bold underline ml-1">Ver cláusula legal.</button>
-                        </span>
-                    </label>
+            <!-- SUB-PANTALLA 1B: FORMULARIO DE CARGA DE DATOS PARA CREAR EL PASAPORTE -->
+            <div id="tenant-step-form" class="hidden space-y-4">
+                
+                <!-- Barra para volver a la pantalla informativa -->
+                <div class="flex items-center justify-between px-1">
+                    <button type="button" onclick="showTenantIntroScreen()" class="bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-extrabold text-xs px-3.5 py-2 rounded-full shadow-sm flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-arrow-left text-indigo-600"></i>
+                        <span>Volver a Información de Inicio</span>
+                    </button>
+                    <span class="text-xs font-extrabold text-indigo-900 bg-indigo-100 border border-indigo-300 px-3 py-1 rounded-full">
+                        Paso 1 de 1: Datos y PDFs
+                    </span>
                 </div>
 
-                <!-- Explicación Gratis vs PRO -->
-                <div class="bg-indigo-50/70 border border-indigo-200 p-3.5 rounded-xl flex items-center justify-between text-xs">
-                    <div>
-                        <span class="font-bold text-indigo-950 text-sm block"><i class="fa-solid fa-gift text-indigo-600 mr-1.5"></i>Promoción Lanzamiento: PRO Gratis</span>
-                        <span class="text-xs text-indigo-900">Emite tu pasaporte y activa todas las funciones PRO gratis por tiempo limitado.</span>
+                <div class="pwa-card p-6 space-y-5">
+                    <div class="border-b border-slate-200 pb-3.5">
+                        <h2 class="text-xl font-extrabold text-slate-900">Configura tu Pasaporte Oficial</h2>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-1">Completa los datos de búsqueda y adjunta la Vida Laboral y última nómina de los titulares.</p>
                     </div>
-                    <button type="button" onclick="openProModal()" class="text-xs font-bold text-indigo-700 underline shrink-0 ml-3">Gratis vs PRO</button>
-                </div>
 
-                <!-- Consola de estado -->
-                <div id="audit-console" class="hidden bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs font-mono space-y-2">
-                    <div id="log-1"><i id="log-spinner" class="fa-solid fa-spinner fa-spin mr-2"></i><span id="log-1-text">Procesando documentos en memoria RAM...</span></div>
-                    <div id="log-2" class="hidden text-slate-300"></div>
-                    <div id="log-3" class="hidden text-emerald-300"></div>
-                </div>
+                    <!-- RECUADRO VERDE DE CUSTODIA CERO SIEMPRE VISIBLE TAMBIÉN EN EL FORMULARIO -->
+                    <div onclick="openPrivacyModal()" class="bg-emerald-100/80 hover:bg-emerald-100 border-2 border-emerald-300 p-4 rounded-2xl cursor-pointer transition flex items-start space-x-3.5">
+                        <div class="bg-emerald-600 text-white w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow">
+                            <i class="fa-solid fa-user-lock text-base"></i>
+                        </div>
+                        <div class="text-xs sm:text-sm">
+                            <span class="font-extrabold text-emerald-950 block">Protocolo de Custodia Cero y Ocultación de DNI</span>
+                            <p class="text-xs text-emerald-900 mt-1 leading-relaxed font-medium">
+                                Tus PDFs <strong>no se almacenan en ningún servidor</strong>. Se analizan en memoria RAM volátil durante 5 segundos y se destruyen automáticamente. Nuestro cortafuegos bloquea cualquier publicación de tu DNI, NIE o cuenta bancaria. <span class="underline font-extrabold">Ver certificado legal →</span>
+                            </p>
+                        </div>
+                    </div>
 
-                <!-- Botón Principal -->
-                <button id="btn-submit-audit" onclick="runFullAuditAndSave()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-5 rounded-xl shadow-md transition flex items-center justify-center space-x-2.5 text-base">
-                    <i class="fa-solid fa-shield-check text-emerald-400"></i>
-                    <span>Auditar Documentos y Generar Pasaporte</span>
-                </button>
+                    <!-- Paso 1: Zona y WhatsApp -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">1. ¿En qué municipio o zona buscáis vivienda?</label>
+                            <input type="text" id="tenant-zone-input" placeholder="Ej: Valdemoro / Madrid Sur / Alcázar" value="Valdemoro / Madrid Sur" 
+                                class="w-full bg-slate-100 border-2 border-slate-300 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-600 transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-1.5">
+                                2. Tu WhatsApp para avisos <span class="text-xs font-bold text-emerald-700">(Oculto en el catálogo público)</span>
+                            </label>
+                            <input type="tel" id="tenant-phone-input" placeholder="Ej: 600 123 456" 
+                                class="w-full bg-slate-100 border-2 border-slate-300 rounded-2xl px-4 py-3 text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-600 transition">
+                        </div>
+                    </div>
+
+                    <!-- Paso 2: Titulares y Parentesco -->
+                    <div class="bg-indigo-100/70 border-2 border-indigo-200 p-4 rounded-2xl space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-extrabold text-indigo-950">
+                                <i class="fa-solid fa-users text-indigo-700 mr-1.5"></i>3. Titulares que firmarán el contrato
+                            </span>
+                            <span class="text-xs bg-white text-indigo-800 border border-indigo-300 font-extrabold px-2.5 py-0.5 rounded-full">Suma Conjunta</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-700 mb-1">Nº Personas con Ingresos</label>
+                                <select id="num-applicants-select" onchange="handleApplicantsChange()" 
+                                    class="w-full bg-white border-2 border-slate-300 rounded-xl p-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:border-indigo-600">
+                                    <option value="1">1 Titular (Individual)</option>
+                                    <option value="2" selected>2 Titulares (Pareja / Dos)</option>
+                                    <option value="3">3 Titulares Firmantes</option>
+                                    <option value="4">4 Titulares Firmantes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-extrabold text-slate-700 mb-1">Relación o Vínculo</label>
+                                <select id="relationship-select" 
+                                    class="w-full bg-white border-2 border-slate-300 rounded-xl p-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:border-indigo-600">
+                                    <option value="Individual">Único titular (Individual)</option>
+                                    <option value="Matrimonio / Pareja" selected>Matrimonio / Pareja</option>
+                                    <option value="Amigos / Compañeros">Amigos / Compañeros</option>
+                                    <option value="Padre/Madre e Hijo/a">Padre/Madre e Hijo/a</option>
+                                    <option value="Hermanos/as">Hermanos/as</option>
+                                    <option value="Otros Familiares">Otros Familiares</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex items-center justify-between border-t border-indigo-200">
+                            <span class="text-xs text-indigo-950 font-semibold">¿No tienes el PDF de tu Vida Laboral?</span>
+                            <button type="button" onclick="openVidaLaboralModal()" class="bg-white hover:bg-indigo-50 text-indigo-800 border border-indigo-300 font-extrabold text-xs px-3 py-1.5 rounded-lg transition">
+                                Solicitar en Seg. Social →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor Dinámico de Documentos por Titular -->
+                    <div id="dynamic-applicants-docs" class="space-y-4"></div>
+
+                    <!-- Consentimiento RGPD -->
+                    <div class="bg-slate-100 p-4 rounded-2xl border border-slate-300">
+                        <label class="flex items-start space-x-3 cursor-pointer">
+                            <input type="checkbox" id="rgpd-consent-check" checked class="mt-1 w-4 h-4 accent-indigo-600 rounded">
+                            <span class="text-xs text-slate-700 leading-relaxed font-medium">
+                                <strong class="text-slate-900">Consentimiento Explícito (Art. 6.1.a RGPD):</strong> Autorizo la lectura automatizada en memoria volátil de los documentos aportados para emitir el pasaporte anonimizado de solvencia, confirmando su autenticidad.
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Consola de Procesamiento -->
+                    <div id="audit-console" class="hidden bg-slate-900 text-emerald-400 p-4 rounded-2xl text-xs font-mono space-y-2">
+                        <div id="log-1"><i id="log-spinner" class="fa-solid fa-spinner fa-spin mr-2"></i><span id="log-1-text">Analizando documentos en memoria RAM...</span></div>
+                        <div id="log-2" class="hidden text-slate-300"></div>
+                        <div id="log-3" class="hidden text-emerald-300"></div>
+                    </div>
+
+                    <!-- Botón Principal -->
+                    <button id="btn-submit-audit" onclick="runFullAuditAndSave()" class="w-full btn-pwa-dark font-extrabold py-4 px-6 text-base flex items-center justify-center space-x-2.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i>
+                        <span>Auditar Documentos y Generar Pasaporte</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- ==========================================
-             VISTA CENTRAL COMÚN: CERTIFICADO DEL CANDIDATO (PASAPORTE)
-             ========================================== -->
-        <div id="view-landlord" class="max-w-lg mx-auto mt-4 px-3.5 print-container hidden">
+        <!-- =========================================================
+             VISTA CENTRAL: PASAPORTE DE SOLVENCIA (ENMARCADO + ORDEN EXACTO)
+             ========================================================= -->
+        <div id="view-landlord" class="space-y-4 print-container hidden">
             
-            <!-- AVISO CUANDO SE ESTÁ VIENDO EL PASAPORTE DE EJEMPLO -->
-            <div id="example-warning-banner" class="bg-amber-50 border border-amber-300 text-amber-950 p-4 rounded-xl mb-3.5 shadow-sm flex items-center justify-between no-print">
+            <!-- Aviso de Modo Vista Previa -->
+            <div id="example-warning-banner" class="bg-amber-100 border-2 border-amber-400 text-amber-950 p-4 rounded-2xl shadow-sm flex items-center justify-between no-print">
                 <div class="text-xs sm:text-sm pr-3">
-                    <span class="font-bold uppercase text-[11px] bg-amber-300/80 text-slate-900 px-2 py-0.5 rounded mr-1">Vista de Demostración</span>
-                    <p class="font-medium mt-1 leading-snug">Estás viendo un <strong>Pasaporte de Ejemplo</strong>. Pulsa en "Crear" para generar el tuyo con tus documentos.</p>
+                    <span class="font-extrabold uppercase text-[10px] bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">Vista Previa</span>
+                    <p class="font-bold mt-1 leading-snug">Estás viendo un <strong>Pasaporte de Ejemplo</strong>. Pulsa en "Crear" para generar el tuyo.</p>
                 </div>
-                <button onclick="switchView('tenant')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shrink-0 transition">
+                <button onclick="switchView('tenant'); showTenantFormScreen();" class="btn-pwa-dark font-bold text-xs px-4 py-2.5 shrink-0">
                     Crear el mío →
                 </button>
             </div>
 
-            <!-- Panel de Control del Inquilino sobre su Pasaporte (Gratis vs PRO) -->
-            <div id="share-banner" class="bg-slate-900 border border-slate-700 text-white p-4 rounded-2xl mb-4 shadow-md space-y-3.5">
+            <!-- Panel Superior de Compartir Enlace (No se imprime) -->
+            <div id="share-banner" class="pwa-card p-5 space-y-3.5 no-print">
                 <div class="flex justify-between items-center">
-                    <span id="plan-badge-top" class="text-xs font-bold uppercase tracking-wide bg-slate-800 text-amber-300 border border-amber-400/40 px-3 py-1 rounded-full">
+                    <span id="plan-badge-top" class="text-xs font-extrabold uppercase tracking-wide bg-amber-100 border border-amber-300 text-amber-950 px-3 py-1 rounded-full">
                         <i class="fa-solid fa-lock mr-1.5"></i>Versión Gratuita
                     </span>
-                    <button onclick="openProModal()" class="text-xs text-slate-300 underline hover:text-white font-medium">
-                        Ver ventajas PRO
+                    <button onclick="openProModal()" class="text-xs font-extrabold text-indigo-700 underline hover:text-indigo-900">
+                        ¿Qué incluye PRO?
                     </button>
                 </div>
 
-                <!-- Input oculto para almacenar la URL internamente -->
                 <input type="hidden" id="share-url-input" value="">
 
                 <div class="relative">
-                    <div id="share-controls-wrapper" class="grid grid-cols-2 gap-2.5 blur-lock">
-                        <button onclick="handleProAction('copy')" class="bg-indigo-600 hover:bg-indigo-500 text-white py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-2 shadow">
+                    <div id="share-controls-wrapper" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 blur-lock">
+                        <button onclick="handleProAction('copy')" class="btn-pwa-outline py-3 px-4 text-xs sm:text-sm font-extrabold flex items-center justify-center space-x-2">
                             <i class="fa-regular fa-copy"></i>
                             <span>Copiar enlace a pasaporte</span>
                         </button>
-                        <button onclick="handleProAction('whatsapp')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-2 shadow">
+                        <button onclick="handleProAction('whatsapp')" class="bg-emerald-600 hover:bg-emerald-500 text-white rounded-full py-3 px-4 text-xs sm:text-sm font-extrabold transition flex items-center justify-center space-x-2 shadow-sm">
                             <i class="fa-brands fa-whatsapp text-base"></i>
                             <span>Enviar por WhatsApp</span>
                         </button>
                     </div>
 
-                    <div id="free-lock-overlay" onclick="openProModal()" class="absolute inset-0 bg-slate-900/90 backdrop-blur-[2px] rounded-xl border border-amber-400/50 flex items-center justify-between px-3.5 cursor-pointer hover:bg-slate-800/90 transition">
-                        <span class="text-xs sm:text-sm font-bold text-amber-300 flex items-center">
-                            <i class="fa-solid fa-crown mr-2"></i>Enlace Idealista y WhatsApp (PRO)
+                    <div id="free-lock-overlay" onclick="openProModal()" class="absolute inset-0 bg-white/90 backdrop-blur-[2px] rounded-2xl border-2 border-indigo-300 flex items-center justify-between px-4 cursor-pointer hover:bg-indigo-50/80 transition">
+                        <span class="text-xs sm:text-sm font-extrabold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-crown text-amber-500 mr-2 text-base"></i>Enlace Idealista y WhatsApp (PRO)
                         </span>
-                        <span class="bg-amber-400 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-lg">Desbloquear</span>
+                        <span class="btn-pwa-dark text-xs font-bold px-3.5 py-1.5">Desbloquear</span>
                     </div>
                 </div>
 
-                <div id="upgrade-cta-bar" class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
-                    <div class="text-xs text-slate-300 leading-snug">
-                        Habilita el QR, descarga en PDF y contacto de propietarios:
-                    </div>
-                    <button onclick="activateProDirectly()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow shrink-0 transition flex items-center">
-                        <i class="fa-solid fa-bolt mr-1.5"></i>Activar PRO (GRATIS por tiempo limitado)
+                <div id="upgrade-cta-bar" class="pt-3 border-t border-slate-200 text-center space-y-1.5">
+                    <button onclick="activateProDirectly()" class="w-full btn-pwa-dark font-extrabold text-xs sm:text-sm py-3.5 px-5 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-bolt text-amber-400"></i>
+                        <span>Activar PRO (GRATIS por tiempo limitado)</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Cabecera Oficial del Certificado (Cambia a Ámbar/Rojo si hay discrepancia documental) -->
-            <div id="cert-header-box" class="bg-emerald-950 text-white rounded-t-2xl p-5 sm:p-6 relative overflow-hidden shadow-md transition-colors">
-                <div class="flex justify-between items-start gap-3">
-                    <div>
-                        <div id="ui-header-pill-box" class="inline-flex items-center space-x-2 bg-emerald-800/80 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-semibold text-emerald-200 mb-2.5">
-                            <span id="ui-header-dot" class="w-2 h-2 rounded-full bg-emerald-400 verified-pulse"></span>
-                            <span id="ui-header-pill-text">EJEMPLO DE AUDITORÍA IA + CSV</span>
+            <!-- =================================================================
+                 DOCUMENTO OFICIAL DEL PASAPORTE (ENMARCADO Y PREPARADO PARA 1 CARA A4)
+                 ================================================================= -->
+            <div id="printable-passport-document" class="passport-official-frame overflow-hidden">
+                
+                <!-- Cabecera Institucional del Documento -->
+                <div id="cert-header-box" class="bg-slate-900 text-white px-5 py-3.5 flex justify-between items-center border-b-2 border-emerald-500">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-400 text-sm"></i>
+                        <span id="ui-header-pill-text" class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">PASAPORTE OFICIAL DE SOLVENCIA • AUDITORÍA IA + CSV</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span id="cert-pro-pill" class="hidden bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">PRO</span>
+                        <span id="ui-cert-id" class="font-mono text-xs font-extrabold text-white bg-slate-800 px-2.5 py-0.5 rounded border border-slate-700">#IC-DEMO01</span>
+                    </div>
+                </div>
+
+                <!-- Marco Interior de Seguridad del Certificado -->
+                <div class="passport-inner-border space-y-4">
+                    
+                    <!-- Fila 1: Identidad Anonimizada + Anillo de Scoring -->
+                    <div class="flex items-center justify-between gap-3 border-b border-slate-200 pb-4">
+                        <div class="flex items-center space-x-3.5">
+                            <div id="ui-shield-box" class="w-14 h-14 rounded-2xl bg-emerald-950 p-1.5 shadow border border-emerald-500/40 flex items-center justify-center shrink-0">
+                                <div class="w-full h-full rounded-xl bg-emerald-500/20 flex flex-col items-center justify-center text-emerald-400">
+                                    <span id="ui-initials" class="text-base font-black text-white leading-none">EJ</span>
+                                    <i class="fa-solid fa-check text-[9px] text-emerald-400 mt-1"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700 block">Certificado de Arrendamiento Urbano</span>
+                                <h2 id="ui-alias" class="font-extrabold text-lg sm:text-xl text-slate-900 leading-tight">Candidato Ejemplo</h2>
+                                <p id="ui-zone" class="text-xs text-slate-600 font-bold mt-0.5">
+                                    <i class="fa-solid fa-location-dot mr-1 text-indigo-600"></i>Zona solicitada: Municipio de Ejemplo
+                                </p>
+                                <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                    <span id="ui-applicants-badge" class="bg-indigo-100 border border-indigo-200 text-indigo-900 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
+                                        2 Titulares
+                                    </span>
+                                    <span id="ui-relationship-badge" class="bg-slate-200 text-slate-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                                        Matrimonio / Pareja
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center">
-                            Pasaporte de Solvencia
-                            <span id="cert-pro-pill" class="hidden ml-2.5 bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-md uppercase">PRO</span>
-                        </h1>
-                        <p class="text-xs sm:text-sm text-emerald-200/90 mt-1">
-                            ID: <span id="ui-cert-id" class="font-mono font-bold text-white">#IC-DEMO01</span> • Protegido RGPD Art. 5.1.c (DNI Oculto)
-                        </p>
+
+                        <!-- Anillo de Scoring -->
+                        <div class="relative w-20 h-20 flex items-center justify-center shrink-0">
+                            <svg class="w-20 h-20" viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r="34" stroke="#cbd5e1" stroke-width="6.5" fill="transparent"></circle>
+                                <circle id="score-ring-circle" class="progress-ring-circle" cx="40" cy="40" r="34" stroke="#10b981" stroke-width="6.5" stroke-linecap="round" fill="transparent" stroke-dasharray="213.6" stroke-dashoffset="10"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                <span class="text-[9px] font-extrabold uppercase text-slate-500 leading-none">Scoring</span>
+                                <span class="text-lg font-black text-slate-900 leading-tight"><span id="ui-score">96</span><span class="text-[11px] text-slate-500 font-bold">/100</span></span>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Código QR -->
-                    <div class="relative bg-white p-2 rounded-xl shadow-sm shrink-0 cursor-pointer" onclick="if(!isProActive) openProModal()">
-                        <img id="ui-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=https://inquicheck.vercel.app" alt="QR" class="w-14 h-14 rounded blur-lock">
-                        <div id="qr-lock-badge" class="absolute inset-0 bg-slate-900/75 rounded-xl flex flex-col items-center justify-center text-amber-400">
-                            <i class="fa-solid fa-lock text-sm"></i>
-                            <span class="text-[10px] font-black uppercase mt-0.5">PRO</span>
+                    <!-- Fila 2: Desglose de Ocupación y Categoría por Titular Firmante -->
+                    <div class="bg-slate-100/90 p-3.5 rounded-2xl border border-slate-300/80 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700">
+                                <i class="fa-solid fa-id-card-clip text-indigo-700 mr-1.5"></i>Ocupación y Categoría por Titular
+                            </span>
+                            <span id="ui-seniority" class="text-xs font-extrabold text-indigo-900 bg-indigo-100 border border-indigo-200 px-2.5 py-0.5 rounded-full">Antigüedad: 8.0 años</span>
+                        </div>
+                        <div id="ui-members-breakdown" class="space-y-1.5"></div>
+                    </div>
+
+                    <!-- Fila 3: 4 Indicadores Financieros Verificados -->
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div class="bg-slate-100/80 border border-slate-300/80 p-3 rounded-2xl flex items-center space-x-3">
+                            <div class="relative w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-briefcase text-sm"></i>
+                                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 text-white text-[8px] flex items-center justify-center border border-white"><i class="fa-solid fa-check"></i></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase text-slate-500 block">Estabilidad</span>
+                                <p id="ui-category" class="text-xs font-extrabold text-slate-900">Indefinido + Func.</p>
+                                <p id="ui-ct-code" class="text-[10px] text-slate-600 font-medium">TGSS: 100 + Func.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-100/80 border border-slate-300/80 p-3 rounded-2xl flex items-center space-x-3">
+                            <div class="relative w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-euro-sign text-sm"></i>
+                                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 text-white text-[8px] flex items-center justify-center border border-white"><i class="fa-solid fa-check"></i></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase text-slate-500 block">Ingreso Neto</span>
+                                <p id="ui-income-bracket" class="text-xs font-extrabold text-slate-900">3.400 € - 3.800 €</p>
+                                <p class="text-[10px] text-slate-600 font-medium">Líquido mensual</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-100/80 border border-slate-300/80 p-3 rounded-2xl flex items-center space-x-3">
+                            <div class="relative w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-scale-balanced text-sm"></i>
+                                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 text-white text-[8px] flex items-center justify-center border border-white"><i class="fa-solid fa-check"></i></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase text-slate-500 block">Cargas Nómina</span>
+                                <p id="ui-garnishment" class="text-xs font-extrabold text-slate-900">0 Embargos</p>
+                                <p class="text-[10px] text-slate-600 font-medium">Nómina limpia</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-100/80 border border-slate-300/80 p-3 rounded-2xl flex items-center space-x-3">
+                            <div class="relative w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-shield-cat text-sm"></i>
+                                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 text-white text-[8px] flex items-center justify-center border border-white"><i class="fa-solid fa-check"></i></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase text-slate-500 block">Techo Seguro</span>
+                                <p id="ui-max-rent" class="text-xs font-extrabold text-emerald-800">Hasta 1.260 €/mes</p>
+                                <p class="text-[10px] text-slate-600 font-medium">Máx. 35% esfuerzo</p>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Fila 4: Dictamen Técnico + QR Oficial -->
+                    <div class="flex items-center justify-between gap-3 bg-indigo-50/80 border border-indigo-200 p-3.5 rounded-2xl">
+                        <div class="text-xs text-slate-700 leading-relaxed">
+                            <span class="font-extrabold text-slate-900 block mb-0.5">
+                                <i class="fa-solid fa-robot text-indigo-700 mr-1"></i>Dictamen Técnico de Auditoría:
+                            </span>
+                            <span id="ui-auditor-notes">Vista previa de demostración: sube tus documentos en "Crear" para validar tu Vida Laboral y nóminas con ocultación total de DNI.</span>
+                        </div>
+                        <div class="relative bg-white p-1.5 rounded-xl border border-slate-300 shadow-sm shrink-0 cursor-pointer" onclick="if(!isProActive) openProModal()">
+                            <img id="ui-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=https://inquicheck.vercel.app" alt="QR" class="w-14 h-14 rounded blur-lock">
+                            <div id="qr-lock-badge" class="absolute inset-0 bg-slate-900/75 rounded-xl flex flex-col items-center justify-center text-amber-400 no-print">
+                                <i class="fa-solid fa-lock text-xs"></i>
+                                <span class="text-[9px] font-black uppercase mt-0.5">PRO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pie Institucional dentro del Documento del Pasaporte -->
+                    <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-semibold">
+                        <span><i class="fa-solid fa-check-double text-emerald-600 mr-1"></i>Protección de Datos RGPD Art. 5.1.c (DNI Oculto)</span>
+                        <span>Verificación: inquicheck.vercel.app</span>
+                    </div>
+
                 </div>
             </div>
+            <!-- FIN DEL MARCO DEL PASAPORTE OFICIAL -->
 
-            <!-- Cuerpo del Certificado -->
-            <div class="bg-white rounded-b-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
+            <!-- =================================================================
+                 CONTROLES JUSTO DEBAJO DEL PASAPORTE:
+                 1º BOTONES IMPRIMIR (1 CARA A4) E INFO SEGURO IMPAGO
+                 2º SIMULADOR (SIN LAS PALABRAS "PARA EL PROPIETARIO")
+                 3º BOTÓN PARA ABRIR LA PANTALLA DE ACCIONES DEL PROPIETARIO
+                 ================================================================= -->
+            <div id="post-passport-controls" class="space-y-4 no-print">
                 
-                <!-- Perfil, Parentesco/Titulares y Scoring -->
-                <div class="flex items-start justify-between border-b border-slate-100 pb-5 gap-3">
-                    <div class="flex items-start space-x-3.5">
-                        <div id="ui-initials" class="w-14 h-14 rounded-2xl bg-slate-100 border-2 border-emerald-600 flex items-center justify-center text-xl font-black text-slate-800 shrink-0 mt-0.5">
-                            EJ
-                        </div>
-                        <div>
-                            <h2 id="ui-alias" class="font-extrabold text-lg text-slate-900 leading-snug">Candidato Ejemplo (Vista Previa)</h2>
-                            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
-                                <span id="ui-applicants-badge" class="bg-indigo-50 text-indigo-800 border border-indigo-200 text-xs font-bold px-2.5 py-0.5 rounded-md">
-                                    <i class="fa-solid fa-users mr-1"></i>2 Titulares Firmantes
-                                </span>
-                                <span id="ui-relationship-badge" class="bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-0.5 rounded-md border border-slate-200">
-                                    Matrimonio / Pareja
-                                </span>
-                            </div>
-                            <p id="ui-zone" class="text-xs sm:text-sm text-slate-600 font-medium mt-2">
-                                <i class="fa-solid fa-location-dot mr-1 text-emerald-600"></i>Busca en: Municipio de Ejemplo
-                            </p>
-                            <button onclick="openPrivacyModal()" class="text-xs font-semibold text-emerald-700 hover:underline mt-1.5 flex items-center no-print">
-                                <i class="fa-solid fa-user-shield mr-1"></i>Identidad protegida según RGPD (Ver Garantía)
-                            </button>
-                        </div>
-                    </div>
-                    <div id="ui-score-box" class="text-right bg-emerald-50 px-4 py-2.5 rounded-2xl border border-emerald-200 shrink-0">
-                        <span id="ui-score-label" class="block text-[11px] font-bold uppercase text-emerald-800">Scoring</span>
-                        <span id="ui-score" class="text-3xl font-black text-emerald-600">96</span><span class="text-xs text-emerald-800 font-bold">/100</span>
-                    </div>
-                </div>
-
-                <!-- DESGLOSE DE OCUPACIÓN Y CATEGORÍA LABORAL DE CADA TITULAR -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/90 space-y-2.5">
-                    <div class="flex justify-between items-center flex-wrap gap-1">
-                        <span class="text-xs font-bold uppercase tracking-wide text-slate-600">
-                            <i class="fa-solid fa-id-card-clip text-indigo-600 mr-1.5"></i>Ocupación y Categoría por Titular
-                        </span>
-                        <span id="ui-seniority" class="text-xs font-bold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-md">Antigüedad máx: 8.0 años</span>
-                    </div>
-                    <div id="ui-members-breakdown" class="space-y-2 pt-1"></div>
-                </div>
-
-                <!-- Dictamen del Auditor (Sanitizado contra DNIs) -->
-                <div id="ui-auditor-box" class="bg-slate-50 border-l-4 border-emerald-600 p-4 rounded-r-xl text-xs sm:text-sm text-slate-700 leading-relaxed">
-                    <span class="font-bold text-slate-900 block mb-1"><i class="fa-solid fa-robot text-emerald-600 mr-1.5"></i>Dictamen Técnico de Auditoría:</span>
-                    <span id="ui-auditor-notes">Vista previa de demostración: cuando subas tus documentos en el botón "Crear", aquí aparecerá la validación oficial de tu Vida Laboral y nóminas sin exponer tu número de DNI.</span>
-                </div>
-
-                <!-- 4 Pilares Resumen (Texto más grande y claro) -->
+                <!-- 1º Botones de Imprimir (1 Cara A4) e Info Seguro de Impago -->
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
-                            <i class="fa-solid fa-briefcase"></i><span>PERFIL LABORAL</span>
-                        </div>
-                        <p id="ui-category" class="text-sm font-bold text-slate-900">Indefinido + Funcionario</p>
-                        <p id="ui-ct-code" class="text-xs text-slate-500 mt-0.5">Códigos TGSS: 100 + Func.</p>
-                    </div>
-
-                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
-                            <i class="fa-solid fa-euro-sign"></i><span>INGRESO CONJUNTO</span>
-                        </div>
-                        <p id="ui-income-bracket" class="text-sm font-bold text-slate-900">3.400 € - 3.800 €/mes</p>
-                        <p class="text-xs text-slate-500 mt-0.5">Líquido mensual neto</p>
-                    </div>
-
-                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
-                            <i class="fa-solid fa-scale-balanced"></i><span>CARGAS EN NÓMINA</span>
-                        </div>
-                        <p id="ui-garnishment" class="text-sm font-bold text-slate-900">0 Embargos</p>
-                        <p class="text-xs text-slate-500 mt-0.5">Sin retenciones judiciales</p>
-                    </div>
-
-                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
-                            <i class="fa-solid fa-shield-cat"></i><span>TECHO ASEGURADORA</span>
-                        </div>
-                        <p id="ui-max-rent" class="text-sm font-bold text-slate-900">Hasta 1.260 €/mes</p>
-                        <p class="text-xs text-slate-500 mt-0.5">Máximo 35% de esfuerzo</p>
-                    </div>
+                    <button onclick="handleProAction('pdf')" class="bg-white hover:bg-slate-50 border-2 border-slate-800 text-slate-900 font-extrabold py-3.5 px-4 rounded-full shadow-sm transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
+                        <i class="fa-solid fa-print text-rose-600 text-sm"></i>
+                        <span>Imprimir / PDF (A4)</span>
+                        <span id="pdf-pro-tag" class="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded-full">PRO</span>
+                    </button>
+                    <button onclick="handleProAction('insurance')" class="bg-white hover:bg-indigo-50 border-2 border-indigo-600 text-indigo-950 font-extrabold py-3.5 px-4 rounded-full shadow-sm transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
+                        <i class="fa-solid fa-umbrella text-indigo-600 text-sm"></i>
+                        <span>Info Seguro Impago</span>
+                    </button>
                 </div>
 
-                <!-- CALCULADORA EN VIVO PARA EL PROPIETARIO -->
-                <div class="bg-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-inner no-print">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-xs sm:text-sm font-bold uppercase tracking-wide text-emerald-400">
-                            <i class="fa-solid fa-calculator mr-1.5"></i>Simulador para Propietarios
+                <!-- 2º Simulador de Esfuerzo (Quitadas las palabras "para el propietario") -->
+                <div class="bg-slate-900 text-white p-5 rounded-3xl space-y-3.5 shadow-lg border border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-400">
+                            <i class="fa-solid fa-calculator mr-1.5"></i>Simulador de Esfuerzo y Viabilidad
                         </span>
-                        <span class="text-xs bg-slate-800 px-2.5 py-0.5 rounded text-slate-300">Interactivo</span>
+                        <span class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded-full font-semibold">Interactivo</span>
                     </div>
-                    <p class="text-xs text-slate-300 mb-3.5">Introduce la renta mensual de tu piso para comprobar el porcentaje de esfuerzo de este candidato:</p>
+                    <p class="text-xs text-slate-300">Introduce la cuota mensual del alquiler para calcular la tasa de esfuerzo financiero:</p>
                     
-                    <div class="flex items-center space-x-3">
-                        <div class="relative w-1/2">
+                    <div class="grid grid-cols-2 gap-3 items-center">
+                        <div class="relative">
                             <input type="number" id="rent-input" value="850" oninput="calculateEffort()" 
-                                class="w-full bg-slate-800 border border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold text-lg focus:outline-none focus:border-emerald-400">
-                            <span class="absolute right-3.5 top-3 text-slate-400 font-bold text-sm">€/mes</span>
+                                class="w-full bg-slate-800 border-2 border-slate-600 rounded-2xl px-4 py-3 text-white font-extrabold text-lg focus:outline-none focus:border-emerald-400">
+                            <span class="absolute right-3.5 top-3.5 text-slate-400 font-bold text-xs">€/mes</span>
                         </div>
-                        <div class="w-1/2 bg-slate-800/90 p-2.5 rounded-xl border border-slate-700 text-center">
-                            <span class="block text-xs text-slate-400">Esfuerzo Financiero</span>
+                        <div class="bg-slate-800/90 p-3 rounded-2xl border border-slate-700 text-center">
+                            <span class="block text-[10px] font-bold uppercase text-slate-400">Tasa de Esfuerzo</span>
                             <span id="effort-result" class="text-base sm:text-lg font-black text-emerald-400">23.6% (Óptimo)</span>
                         </div>
                     </div>
-                    <div id="insurance-badge" class="mt-3.5 text-xs sm:text-sm bg-emerald-950/90 border border-emerald-600/50 text-emerald-200 p-3 rounded-xl flex items-center">
+
+                    <div id="insurance-badge" class="text-xs bg-emerald-950/90 border border-emerald-600/50 text-emerald-200 p-3 rounded-2xl flex items-center">
                         <i class="fa-solid fa-check-double text-base mr-2.5 text-emerald-400"></i>
                         <span><strong>APTO PARA SEGURO DE IMPAGO:</strong> Cumple holgadamente el requisito (menor al 35%).</span>
                     </div>
                 </div>
 
-                <!-- CAJA DIFERENCIADA DE ACCIONES PARA PROPIETARIOS Y DESCARGA PDF -->
-                <div class="space-y-3.5 pt-1 no-print">
-                    
-                    <div class="bg-indigo-50/70 border border-indigo-200 p-4 rounded-xl space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-extrabold uppercase tracking-wide text-indigo-950 bg-indigo-200/70 px-2.5 py-1 rounded-md">
-                                <i class="fa-solid fa-building-user mr-1.5"></i>Exclusivo Propietarios y Agencias
-                            </span>
-                            <span class="text-xs text-indigo-700 font-semibold">Doble Llave RGPD</span>
-                        </div>
-                        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                            Si alquilas un inmueble y te interesa este perfil, envíale tu propuesta a su WhatsApp y Buzón Privado para solicitarle la documentación original:
-                        </p>
-                        <button onclick="handleProAction('contact')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-sm transition flex items-center justify-center space-x-2 text-sm">
-                            <i class="fa-brands fa-whatsapp text-lg"></i>
-                            <span>Soy Propietario: Contactar y Solicitar Documentación</span>
-                        </button>
+                <!-- 3º Acceso a la Pantalla Independiente para el Propietario (Contactar y Catálogo) -->
+                <div class="pwa-card p-4 bg-indigo-50/90 border-2 border-indigo-300 flex items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-800 bg-indigo-200/80 px-2.5 py-0.5 rounded-full">
+                            <i class="fa-solid fa-building-user mr-1"></i>¿Eres Propietario o Agencia?
+                        </span>
+                        <h4 class="text-sm font-extrabold text-slate-900 mt-1">Contactar con este candidato o ver más perfiles</h4>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <button onclick="handleProAction('pdf')" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-bold py-3 px-3 rounded-xl transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
-                            <i class="fa-solid fa-file-pdf text-rose-600"></i>
-                            <span>Descargar PDF</span>
-                            <span id="pdf-pro-tag" class="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded ml-1">PRO</span>
-                        </button>
-                        <button onclick="handleProAction('insurance')" class="bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-950 font-bold py-3 px-3 rounded-xl transition flex items-center justify-center space-x-2 text-xs sm:text-sm">
-                            <i class="fa-solid fa-umbrella text-amber-600"></i>
-                            <span>Info Seguro Impago</span>
-                        </button>
-                    </div>
+                    <button onclick="switchView('landlord-actions')" class="btn-pwa-dark font-extrabold text-xs px-4 py-3 shrink-0 flex items-center space-x-1.5">
+                        <span>Opciones Casero</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
                 </div>
-            </div>
 
-            <!-- Banner para llevar al Propietario al Catálogo -->
-            <div id="landlord-bottom-cta" class="mt-4 bg-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-sm flex items-center justify-between border border-slate-800 no-print">
-                <div class="pr-3">
-                    <span class="text-[11px] font-bold uppercase bg-indigo-600 px-2.5 py-0.5 rounded-full">Área Propietarios</span>
-                    <h4 class="font-bold text-sm sm:text-base mt-1.5">¿Buscas más candidatos verificados?</h4>
-                    <p class="text-xs text-slate-300 mt-0.5">Filtra por parejas, ocupaciones, funcionarios o ingresos sin publicar tu vivienda.</p>
-                </div>
-                <button onclick="switchView('directory')" class="bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shrink-0 shadow transition">
-                    Ver Catálogo →
-                </button>
             </div>
         </div>
 
-        <!-- ==========================================
-             VISTA 3: CATÁLOGO / BOLSA DE INQUILINOS PRE-AUDITADOS
-             ========================================== -->
-        <div id="view-directory" class="max-w-lg mx-auto mt-4 px-3.5 hidden">
-            <div class="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-md mb-4 border border-slate-800">
+        <!-- =========================================================
+             NUEVA PANTALLA APARTE EXCLUSIVA PARA EL PROPIETARIO
+             (Se abre al llamarla desde el Pasaporte: Contactar + Ir al Catálogo)
+             ========================================================= -->
+        <div id="view-landlord-actions" class="space-y-4 hidden">
+            
+            <div class="flex items-center justify-between px-1">
+                <button type="button" onclick="switchView('landlord')" class="bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-extrabold text-xs px-3.5 py-2 rounded-full shadow-sm flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-arrow-left text-indigo-600"></i>
+                    <span>Volver al Pasaporte</span>
+                </button>
+                <span class="text-xs font-extrabold text-indigo-950 bg-indigo-200/80 border border-indigo-300 px-3 py-1 rounded-full">
+                    Opciones para el Propietario
+                </span>
+            </div>
+
+            <!-- Tarjeta 1: Contactar y Solicitar Documentación al Candidato -->
+            <div class="pwa-card p-6 space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-[11px] font-extrabold uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">Protocolo Doble Llave RGPD</span>
+                        <h3 class="text-lg font-extrabold text-slate-900 mt-0.5">Contactar con <span id="action-screen-tenant-alias" class="text-indigo-700">este candidato</span></h3>
+                    </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Si tienes una vivienda en alquiler y te encaja la solvencia de este expediente (<strong id="action-screen-passport-id" class="font-mono text-slate-900">#IC-DEMO01</strong>), envíale los datos de tu inmueble a su WhatsApp y a su Buzón Privado para solicitarle su documentación original:
+                </p>
+
+                <button onclick="handleProAction('contact')" class="w-full btn-pwa-dark font-extrabold py-4 px-5 text-sm flex items-center justify-center space-x-2">
+                    <i class="fa-brands fa-whatsapp text-emerald-400 text-base"></i>
+                    <span>Contactar y Solicitar Documentación al Candidato</span>
+                </button>
+            </div>
+
+            <!-- Tarjeta 2: Acceder al Catálogo / Bolsa de Inquilinos -->
+            <div class="pwa-card p-6 space-y-4 bg-gradient-to-br from-slate-900 to-indigo-950 text-white border-slate-800">
                 <div class="flex justify-between items-center">
-                    <span class="bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 text-xs font-bold px-3 py-0.5 rounded-full">
-                        <i class="fa-solid fa-building-user mr-1.5"></i>Área Exclusiva Propietarios
+                    <span class="text-[11px] font-extrabold uppercase bg-indigo-500/40 border border-indigo-400/40 text-indigo-200 px-3 py-0.5 rounded-full">
+                        Bolsa de Inquilinos Pre-Auditados
                     </span>
-                    <span class="text-xs text-emerald-400 font-semibold"><i class="fa-solid fa-shield-check mr-1"></i>Perfiles Auditados</span>
+                    <i class="fa-solid fa-magnifying-glass-chart text-indigo-300 text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-extrabold">¿Buscas más candidatos verificados en tu zona?</h3>
+                    <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+                        Consulta nuestro catálogo de inquilinos cuya Vida Laboral y nóminas ya han sido auditadas. Filtra por municipio, parejas, funcionarios o techo de alquiler sin necesidad de publicar tu anuncio.
+                    </p>
+                </div>
+                <button onclick="switchView('directory')" class="w-full bg-white hover:bg-indigo-50 text-slate-900 font-extrabold py-3.5 px-5 rounded-full text-sm transition flex items-center justify-center space-x-2 shadow">
+                    <span>Ir al Catálogo de Inquilinos</span>
+                    <i class="fa-solid fa-arrow-right text-indigo-600"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- =========================================================
+             VISTA 3: CATÁLOGO DE INQUILINOS PRE-AUDITADOS
+             ========================================================= -->
+        <div id="view-directory" class="space-y-4 hidden">
+            <div class="pwa-card p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="bg-indigo-100 border border-indigo-300 text-indigo-900 text-xs font-extrabold px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-building-user mr-1.5"></i>Área Propietarios
+                    </span>
+                    <span class="text-xs text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-full font-extrabold"><i class="fa-solid fa-shield-check mr-1"></i>RGPD Verificado</span>
                 </div>
 
-                <h2 class="text-xl font-extrabold mt-2.5">Bolsa de Inquilinos Pre-Auditados</h2>
-                <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">Consulta el desglose de ocupación, categoría laboral y solvencia de los candidatos sin publicar tu anuncio.</p>
-
-                <!-- AVISO LEGAL DESTACADO DE NO INFORMACIÓN SENSIBLE -->
-                <div class="mt-3.5 bg-slate-800/90 border border-emerald-500/40 p-3.5 rounded-xl text-xs text-slate-200 leading-relaxed">
-                    <div class="font-bold text-emerald-400 flex items-center mb-1">
-                        <i class="fa-solid fa-user-lock mr-1.5"></i>Base de Datos Anonimizada (Cumplimiento RGPD)
-                    </div>
-                    En este catálogo <strong>jamás se almacenan ni muestran números de DNI/NIE, nóminas originales, nombres de empresas ni apellidos completos</strong>. La documentación original solo se comparte entre las partes tras contactar mediante el Pasaporte de Solvencia.
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Catálogo de Inquilinos</h2>
+                    <p class="text-sm text-slate-600 mt-1">Consulta la ocupación, antigüedad y solvencia de los candidatos sin exponer datos sensibles.</p>
                 </div>
 
-                <!-- Filtros Completos -->
-                <div class="mt-4 space-y-3 pt-3.5 border-t border-slate-800">
+                <div class="bg-emerald-50 border-2 border-emerald-200 p-3.5 rounded-2xl text-xs text-emerald-950 leading-relaxed font-medium">
+                    <strong class="font-extrabold"><i class="fa-solid fa-user-lock text-emerald-700 mr-1"></i>Base de Datos Sin Datos Sensibles:</strong> No se almacenan ni muestran DNIs, nóminas originales ni nombres de empresas. La documentación personal solo se comparte tras contactar mediante el Pasaporte.
+                </div>
+
+                <!-- Filtros con mayor contraste -->
+                <div class="space-y-3 pt-2 border-t border-slate-200">
                     <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Zona / Municipio</label>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">Zona / Municipio</label>
                             <input type="text" id="filter-zone" oninput="renderDirectoryList()" placeholder="Ej: Valdemoro, Madrid..." 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-600">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Alquiler de tu Piso (€)</label>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">Alquiler de tu Piso (€)</label>
                             <input type="number" id="filter-rent" oninput="renderDirectoryList()" placeholder="Ej: 950" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white font-bold focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-indigo-600">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Nº de Titulares</label>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">Nº de Titulares</label>
                             <select id="filter-applicants" onchange="renderDirectoryList()" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white font-medium focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:border-indigo-600">
                                 <option value="ALL">Cualquier Nº Titulares</option>
                                 <option value="1">1 Titular (Individual)</option>
                                 <option value="2">2 Titulares (Parejas)</option>
@@ -534,9 +804,9 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1">Categoría / Ocupación</label>
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">Categoría / Ocupación</label>
                             <select id="filter-category" onchange="renderDirectoryList()" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white font-medium focus:outline-none focus:border-emerald-400">
+                                class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:border-indigo-600">
                                 <option value="ALL">Todas las Categorías</option>
                                 <option value="Funcionario">Funcionarios / Público</option>
                                 <option value="Indefinido">Contratos Indefinidos</option>
@@ -547,141 +817,135 @@
                 </div>
             </div>
 
-            <!-- Lista de Candidatos -->
+            <!-- Lista de Tarjetas de Candidatos -->
             <div id="directory-list" class="space-y-3.5"></div>
         </div>
 
-        <!-- ==========================================
-             VISTA 2: BUZÓN PRIVADO DEL INQUILINO (ACCESO CON ID)
-             ========================================== -->
-        <div id="view-inbox" class="max-w-lg mx-auto mt-4 px-3.5 hidden">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
-                <div class="border-b border-slate-100 pb-3.5">
-                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-full">
-                        <i class="fa-solid fa-envelope-open-text mr-1"></i>Área Exclusiva Inquilinos
+        <!-- =========================================================
+             VISTA 2: BUZÓN PRIVADO DEL INQUILINO
+             ========================================================= -->
+        <div id="view-inbox" class="hidden">
+            <div class="pwa-card p-6 space-y-4">
+                <div>
+                    <span class="bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-extrabold px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-envelope-open-text mr-1"></i>Buzón Doble Llave
                     </span>
-                    <h2 class="text-xl font-extrabold text-slate-900 mt-2.5">Buzón Privado de Ofertas</h2>
-                    <p class="text-sm text-slate-600 mt-1">Introduce el identificador de tu Pasaporte para consultar las propuestas de alquiler que te han enviado los propietarios.</p>
+                    <h2 class="text-2xl font-extrabold text-slate-900 mt-2.5">Ofertas de Propietarios</h2>
+                    <p class="text-sm text-slate-600 mt-1">Introduce el identificador de tu Pasaporte para consultar las ofertas de alquiler recibidas.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-800 mb-1.5">Tu ID de Pasaporte (ej: IC-894F2A)</label>
                     <div class="flex space-x-2">
-                        <input type="text" id="inbox-id-input" placeholder="IC-XXXXXX" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-mono font-bold uppercase">
-                        <button onclick="checkTenantInbox()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-xl text-sm shrink-0 transition">
+                        <input type="text" id="inbox-id-input" placeholder="IC-XXXXXX" class="w-full bg-slate-100 border-2 border-slate-300 rounded-full px-4 py-3 text-sm font-mono font-bold uppercase focus:bg-white focus:outline-none focus:border-indigo-600">
+                        <button onclick="checkTenantInbox()" class="btn-pwa-dark font-bold px-6 py-3 text-sm shrink-0">
                             Consultar
                         </button>
                     </div>
                 </div>
                 <div id="tenant-inbox-list" class="space-y-3 pt-2">
-                    <div class="text-center py-8 text-sm text-slate-400">Introduce tu código ID arriba para ver tus mensajes privados.</div>
+                    <div class="text-center py-8 text-sm text-slate-500 font-medium">Introduce tu código ID arriba para ver tus mensajes privados.</div>
                 </div>
             </div>
         </div>
+
     </main>
 
     <!-- ==========================================
          PIE DE PÁGINA LEGAL
          ========================================== -->
-    <footer class="max-w-lg mx-auto w-full px-4 pt-8 pb-4 text-center text-xs text-slate-500 space-y-2 no-print">
-        <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1.5 font-semibold text-slate-600">
-            <button onclick="openLegalModal()" class="hover:text-slate-900 underline">Términos y Condiciones</button>
+    <footer class="max-w-lg mx-auto w-full px-4 pt-10 pb-4 text-center text-xs text-slate-600 space-y-2 no-print">
+        <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1.5 font-extrabold text-slate-700">
+            <button onclick="openLegalModal()" class="hover:text-indigo-700 underline">Términos y Condiciones</button>
             <span>•</span>
-            <button onclick="openLegalModal()" class="hover:text-slate-900 underline">Política de Privacidad</button>
+            <button onclick="openLegalModal()" class="hover:text-indigo-700 underline">Política de Privacidad</button>
             <span>•</span>
-            <button onclick="openPrivacyModal()" class="hover:text-slate-900 underline">Protección de Datos (RGPD / Custodia Cero)</button>
+            <button onclick="openPrivacyModal()" class="hover:text-indigo-700 underline">Garantía RGPD / Custodia Cero</button>
         </div>
-        <p class="text-xs text-slate-400">© 2026 InquiCheck España • Cumplimiento estricto LSSI-CE, RGPD (UE) 2016/679 y LOPDGDD 3/2018.</p>
+        <p class="text-xs text-slate-500 font-medium">© 2026 InquiCheck España • LSSI-CE, RGPD (UE) 2016/679 y LOPDGDD 3/2018.</p>
     </footer>
 
     <!-- ==========================================
-         MODAL: CÓMO SOLICITAR LA VIDA LABORAL EN LA SEGURIDAD SOCIAL
+         MODALES INFORMATIVOS Y LEGALES
          ========================================== -->
-    <div id="vidalaboral-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
+    <div id="vidalaboral-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="pwa-card max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-3.5">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-indigo-100 text-indigo-700 w-10 h-10 rounded-xl flex items-center justify-center font-bold shrink-0">
+                    <div class="bg-indigo-100 text-indigo-700 w-10 h-10 rounded-2xl flex items-center justify-center font-bold shrink-0">
                         <i class="fa-solid fa-building-columns text-lg"></i>
                     </div>
                     <div>
-                        <span class="text-xs font-bold uppercase text-indigo-700">Portal Oficial TGSS</span>
-                        <h3 class="text-base font-extrabold text-slate-900">Cómo descargar tu Vida Laboral en PDF</h3>
+                        <span class="text-xs font-extrabold uppercase text-indigo-600">Portal Oficial TGSS</span>
+                        <h3 class="text-base font-extrabold text-slate-900">Solicitar Vida Laboral en 1 minuto</h3>
                     </div>
                 </div>
                 <button onclick="closeVidaLaboralModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <div class="space-y-3 text-sm text-slate-600">
-                <p>Obtén tu Informe de Vida Laboral oficial en PDF (con código CSV) gratis y al instante siguiendo estos 3 pasos:</p>
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5 text-xs sm:text-sm">
+                <p>Descarga gratis tu Informe de Vida Laboral oficial en PDF (con código CSV) desde el portal Importass:</p>
+                <div class="bg-slate-100 p-4 rounded-2xl border border-slate-300 space-y-2.5 text-xs sm:text-sm font-medium text-slate-800">
                     <div class="flex items-start space-x-2.5">
                         <span class="bg-indigo-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">1</span>
-                        <span>Accede al portal oficial <strong>Importass de la Seguridad Social</strong> desde el botón inferior.</span>
+                        <span>Entra en el portal oficial <strong>Importass de la Seguridad Social</strong>.</span>
                     </div>
                     <div class="flex items-start space-x-2.5">
                         <span class="bg-indigo-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">2</span>
-                        <span>Pulsa en <strong>"Consultar vida laboral"</strong> e identifícate mediante <strong>SMS</strong>, <strong>Cl@ve</strong> o <strong>Certificado Digital</strong>.</span>
+                        <span>Pulsa en <strong>"Consultar vida laboral"</strong> e identifícate por <strong>SMS</strong>, <strong>Cl@ve</strong> o <strong>Certificado</strong>.</span>
                     </div>
                     <div class="flex items-start space-x-2.5">
                         <span class="bg-indigo-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">3</span>
-                        <span>Pulsa en <strong>"Descargar vida laboral en PDF"</strong> y súbelo en esta pantalla.</span>
+                        <span>Pulsa en <strong>"Descargar vida laboral en PDF"</strong> y adjúntalo aquí.</span>
                     </div>
                 </div>
             </div>
 
             <div class="space-y-2.5 pt-1">
                 <a href="https://portal.seg-social.gob.es/wps/portal/importass/importass/Categorias/Vida+laboral+e+informes/Informes+sobre+tu+situacion+laboral/Informe+de+tu+vida+laboral" target="_blank" rel="noopener noreferrer"
-                   class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm shadow transition flex items-center justify-center space-x-2">
+                   class="w-full btn-pwa-dark font-extrabold py-3.5 text-sm flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    <span>Ir a la Web de la Seguridad Social</span>
+                    <span>Abrir Web de la Seguridad Social</span>
                 </a>
-                <button onclick="closeVidaLaboralModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs sm:text-sm transition">
+                <button onclick="closeVidaLaboralModal()" class="w-full btn-pwa-outline font-bold py-2.5 text-xs sm:text-sm">
                     Volver al formulario
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL DE TÉRMINOS Y CONDICIONES Y POLÍTICA DE PRIVACIDAD (LSSI / RGPD)
-         ========================================== -->
-    <div id="legal-terms-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
+    <div id="legal-terms-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="pwa-card max-w-md w-full p-6 max-h-[90vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-3.5">
                 <div>
-                    <span class="text-xs font-bold uppercase text-slate-500">Marco Normativo Español y Europeo</span>
+                    <span class="text-xs font-extrabold uppercase text-indigo-600">Marco Normativo Europeo</span>
                     <h3 class="text-lg font-extrabold text-slate-900">Términos Legales y Privacidad</h3>
                 </div>
                 <button onclick="closeLegalModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <div class="space-y-3.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div class="bg-slate-100 p-4 rounded-2xl border border-slate-300">
                     <h4 class="font-bold text-slate-900 mb-1">1. Términos y Condiciones de Uso (LSSI-CE)</h4>
                     <p>InquiCheck es una herramienta tecnológica de auditoría documental automatizada y emisión voluntaria de certificados de solvencia para arrendamientos urbanos. InquiCheck no actúa como agencia inmobiliaria ni aseguradora. El usuario declara bajo su responsabilidad que los documentos aportados son íntegros y auténticos, penalizándose automáticamente con calificación de riesgo alto cualquier discrepancia de titularidad entre documentos.</p>
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div class="bg-slate-100 p-4 rounded-2xl border border-slate-300">
                     <h4 class="font-bold text-slate-900 mb-1">2. Política de Privacidad y Filtro Anti-DNI (RGPD Art. 5.1.c)</h4>
-                    <p>En cumplimiento estricto del principio de <strong>Minimización de Datos</strong>:</p>
                     <ul class="list-disc pl-4 mt-1.5 space-y-1">
                         <li><strong>Destrucción en RAM:</strong> Los archivos PDF seleccionados se leen en memoria volátil durante la extracción de métricas y se destruyen inmediatamente sin guardarse en ningún disco ni repositorio.</li>
-                        <li><strong>Bloqueo Algorítmico de DNI/NIE/IBAN:</strong> El sistema aplica un filtro de expresiones regulares que impide almacenar o mostrar números de DNI, NIE, NAF o cuentas bancarias en el certificado o en el catálogo, incluso en caso de detectarse discrepancias documentales.</li>
+                        <li><strong>Bloqueo Algorítmico de DNI/NIE/IBAN:</strong> El sistema aplica un filtro de expresiones regulares que impide almacenar o mostrar números de DNI, NIE, NAF o cuentas bancarias en el certificado o en el catálogo.</li>
                     </ul>
                 </div>
             </div>
 
-            <button onclick="closeLegalModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition">
+            <button onclick="closeLegalModal()" class="w-full btn-pwa-dark font-bold py-3.5 text-sm">
                 Cerrar Información Legal
             </button>
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL OCULTO DE ADMINISTRADOR (5 CLICS EN EL LOGO)
-         ========================================== -->
-    <div id="secret-admin-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 text-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3.5">
+    <div id="secret-admin-modal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-slate-900 border border-slate-700 text-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-3.5">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
                 <span class="text-xs font-bold text-emerald-400"><i class="fa-solid fa-terminal mr-1.5"></i>Panel Interno Admin</span>
                 <button onclick="document.getElementById('secret-admin-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -698,21 +962,18 @@
                 <input type="text" id="model-name-input" value="gemini-3.8-flash" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-emerald-400 font-mono font-bold">
                 <p id="model-status-msg" class="text-xs text-slate-400 mt-1"></p>
             </div>
-            <button onclick="saveGeminiConfigLocally()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
+            <button onclick="saveGeminiConfigLocally()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-full text-xs transition">
                 Guardar y Cerrar
             </button>
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL COMPARATIVO: VERSIÓN GRATUITA VS VERSIÓN PRO
-         ========================================== -->
-    <div id="pro-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
+    <div id="pro-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="pwa-card max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-3.5">
                 <div>
-                    <span class="bg-amber-100 text-amber-900 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase">
-                        <i class="fa-solid fa-crown mr-1"></i>Pasaporte InquiCheck PRO
+                    <span class="bg-amber-100 text-amber-900 text-xs font-extrabold px-3 py-0.5 rounded-full uppercase">
+                        <i class="fa-solid fa-crown mr-1"></i>Pasaporte PRO
                     </span>
                     <h3 class="text-lg font-extrabold text-slate-900 mt-1.5">Versión Gratuita vs. PRO</h3>
                 </div>
@@ -720,22 +981,22 @@
             </div>
 
             <p class="text-xs sm:text-sm text-slate-600">
-                Con la <strong>Versión Gratuita</strong> puedes auditar tus documentos y conocer tu Scoring real. Activa la <strong>Versión PRO</strong> para compartir tu certificado oficial con propietarios:
+                Con la <strong>Versión Gratuita</strong> puedes auditar tus documentos y conocer tu Scoring real. Activa la <strong>Versión PRO</strong> para compartir tu certificado con propietarios:
             </p>
 
-            <div class="border border-slate-200 rounded-xl overflow-hidden text-xs sm:text-sm">
+            <div class="border border-slate-300 rounded-2xl overflow-hidden text-xs sm:text-sm">
                 <div class="grid grid-cols-3 bg-slate-900 text-white font-bold py-2.5 px-3">
                     <span>Funcionalidad</span>
                     <span class="text-center text-slate-300">Gratis</span>
                     <span class="text-center text-amber-400">PRO</span>
                 </div>
-                <div class="divide-y divide-slate-100">
+                <div class="divide-y divide-slate-200">
                     <div class="grid grid-cols-3 py-2.5 px-3 items-center">
                         <span class="font-medium text-slate-700">Auditoría IA + Scoring</span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                     </div>
-                    <div class="grid grid-cols-3 py-2.5 px-3 items-center bg-slate-50/60">
+                    <div class="grid grid-cols-3 py-2.5 px-3 items-center bg-slate-50">
                         <span class="font-bold text-slate-900">Código QR Oficial</span>
                         <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Activo</span>
@@ -745,38 +1006,35 @@
                         <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Activo</span>
                     </div>
-                    <div class="grid grid-cols-3 py-2.5 px-3 items-center bg-slate-50/60">
+                    <div class="grid grid-cols-3 py-2.5 px-3 items-center bg-slate-50">
                         <span class="font-bold text-slate-900">Recibir Ofertas de Caseros</span>
                         <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                     </div>
                     <div class="grid grid-cols-3 py-2.5 px-3 items-center">
-                        <span class="font-bold text-slate-900">Descargar Certificado PDF</span>
+                        <span class="font-bold text-slate-900">Imprimir / PDF (1 Cara A4)</span>
                         <span class="text-center text-rose-500"><i class="fa-solid fa-lock"></i></span>
                         <span class="text-center text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Sí</span>
                     </div>
                 </div>
             </div>
 
-            <button onclick="activateProDirectly()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow transition flex items-center justify-center space-x-2">
-                <i class="fa-solid fa-bolt"></i>
+            <button onclick="activateProDirectly()" class="w-full btn-pwa-dark font-extrabold py-3.5 text-sm flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-bolt text-amber-400"></i>
                 <span>Activar PRO (GRATIS por tiempo limitado)</span>
             </button>
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL LEGAL RGPD / CUSTODIA CERO COMPLETO
-         ========================================== -->
-    <div id="privacy-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-3.5">
+    <div id="privacy-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="pwa-card max-w-md w-full p-6 max-h-[90vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-3.5">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-emerald-100 text-emerald-700 w-10 h-10 rounded-xl flex items-center justify-center font-bold shrink-0">
+                    <div class="bg-emerald-100 text-emerald-700 w-10 h-10 rounded-2xl flex items-center justify-center font-bold shrink-0">
                         <i class="fa-solid fa-scale-balanced text-lg"></i>
                     </div>
                     <div>
-                        <span class="text-xs font-bold uppercase text-emerald-700">Garantía Legal LOPDGDD y RGPD</span>
+                        <span class="text-xs font-extrabold uppercase text-emerald-700">Garantía Legal LOPDGDD y RGPD</span>
                         <h3 class="text-base font-extrabold text-slate-900">Protección y Custodia Cero</h3>
                     </div>
                 </div>
@@ -784,14 +1042,14 @@
             </div>
 
             <div class="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div class="bg-slate-100 p-4 rounded-2xl border border-slate-300">
                     <span class="font-bold text-slate-900 flex items-center mb-1">
                         <i class="fa-solid fa-microchip text-emerald-600 mr-2"></i>1. Lectura Efímera en Memoria RAM
                     </span>
                     <p>Los archivos PDF seleccionados no se guardan en ningún disco duro ni servidor. Se procesan en memoria volátil durante 5 segundos para validar el CSV y la coherencia entre documentos, y se destruyen de forma irreversible.</p>
                 </div>
 
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div class="bg-slate-100 p-4 rounded-2xl border border-slate-300">
                     <span class="font-bold text-slate-900 flex items-center mb-1">
                         <i class="fa-solid fa-user-secret text-emerald-600 mr-2"></i>2. Ocultación Total de DNI/NIE (Art. 5.1.c RGPD)
                     </span>
@@ -799,20 +1057,17 @@
                 </div>
             </div>
 
-            <button onclick="closePrivacyModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition">
+            <button onclick="closePrivacyModal()" class="w-full btn-pwa-dark font-bold py-3.5 text-sm">
                 Entendido y Cerrar
             </button>
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL DE CONTACTO DEL PROPIETARIO AL INQUILINO
-         ========================================== -->
-    <div id="contact-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+    <div id="contact-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="pwa-card max-w-sm w-full p-6 space-y-4">
             <div class="flex justify-between items-start">
                 <div>
-                    <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-0.5 rounded-full">Exclusivo Propietarios / Agencias</span>
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Exclusivo Propietarios / Agencias</span>
                     <h3 class="text-lg font-extrabold text-slate-900 mt-1.5">Contactar con <span id="modal-tenant-name">Candidato</span></h3>
                 </div>
                 <button onclick="closeContactModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -822,24 +1077,24 @@
             </p>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Tu Nombre (Propietario / Agencia)</label>
-                    <input type="text" id="landlord-name" placeholder="Ej: Antonio (Propietario)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tu Nombre (Propietario / Agencia)</label>
+                    <input type="text" id="landlord-name" placeholder="Ej: Antonio (Propietario)" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-2.5 text-sm font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Tu Teléfono / WhatsApp</label>
-                    <input type="tel" id="landlord-phone" placeholder="Ej: 655 00 11 22" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tu Teléfono / WhatsApp</label>
+                    <input type="tel" id="landlord-phone" placeholder="Ej: 655 00 11 22" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-2.5 text-sm font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Características y Precio del Alquiler</label>
-                    <input type="text" id="landlord-property" placeholder="Ej: Piso 3 hab en Valdemoro - 850 €/mes" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Características y Precio del Alquiler</label>
+                    <input type="text" id="landlord-property" placeholder="Ej: Piso 3 hab en Valdemoro - 850 €/mes" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-2.5 text-sm font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Información Adicional / Enlace Idealista</label>
-                    <textarea id="landlord-extra" rows="2" placeholder="Pega aquí el enlace de tu anuncio en Idealista o condiciones..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm"></textarea>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Información Adicional / Enlace Idealista</label>
+                    <textarea id="landlord-extra" rows="2" placeholder="Pega aquí el enlace de tu anuncio en Idealista o condiciones..." class="w-full bg-slate-100 border border-slate-300 rounded-xl p-2.5 text-sm font-medium"></textarea>
                 </div>
             </div>
-            <button onclick="submitContactRequest()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow transition flex items-center justify-center space-x-2">
-                <i class="fa-brands fa-whatsapp text-base"></i>
+            <button onclick="submitContactRequest()" class="w-full btn-pwa-dark font-bold py-3.5 text-sm flex items-center justify-center space-x-2">
+                <i class="fa-brands fa-whatsapp text-emerald-400 text-base"></i>
                 <span>Enviar Propuesta por WhatsApp</span>
             </button>
         </div>
@@ -877,17 +1132,12 @@
         // =========================================================================
         // 2. CORTAFUEGOS ALGORÍTMICO ANTI-DNI / NIE / NIF / IBAN (RGPD ART. 5.1.C)
         // =========================================================================
-        // Garantiza que NUNCA aparezca un número de DNI/NIE en el pasaporte aunque la IA lo mencione por error
         function sanitizePII(text) {
             if (!text || typeof text !== 'string') return "";
             return text
-                // Bloquea DNI español (8 dígitos seguidos de letra, con o sin guión/espacio/puntos)
                 .replace(/\b\d{1,2}\.?\d{3}\.?\d{3}[-\s]?[A-Za-z]\b/g, '[DNI OCULTO RGPD]')
-                // Bloquea NIE español (X, Y, Z seguido de 7 u 8 dígitos y letra)
                 .replace(/\b[XYZxyz][-\s.]?\d{7,8}[-\s]?[A-Za-z]\b/g, '[NIE OCULTO RGPD]')
-                // Bloquea IBAN español (ES seguido de dígitos)
                 .replace(/\bES\d{2}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{2,4}[-\s]?\d{4,10}\b/gi, '[IBAN OCULTO RGPD]')
-                // Bloquea Número de Afiliación Seguridad Social (NAF de 11-12 dígitos seguidos)
                 .replace(/\b\d{2}[-\s/]?\d{8}[-\s/]?\d{2}\b/g, '[NAF OCULTO RGPD]')
                 .replace(/\b\d{9,14}\b/g, '[ID OCULTO RGPD]');
         }
@@ -918,7 +1168,6 @@
         let pdfTamperingDetected = false;
         let secretClickCounter = 0;
 
-        // PASAPORTE DE EJEMPLO INICIAL
         const EXAMPLE_PASSPORT_TEMPLATE = {
             id: "IC-DEMO01",
             is_example: true,
@@ -966,7 +1215,6 @@
             }
         ];
 
-        // SYSTEM PROMPT RIGUROSO V13: PROHIBICIÓN ABSOLUTA DE DNI Y PENALIZACIÓN SEVERA DE SCORING SI NO COINCIDEN LOS DOCUMENTOS
         const SYSTEM_PROMPT_MULTI_AUDITOR = `Eres un Auditor Forense de Riesgo Financiero e Inmobiliario en España sujeto al RGPD (Art. 5.1.c).
         Analiza los documentos PDF aportados para los titulares firmantes y devuelve EXCLUSIVAMENTE un objeto JSON.
 
@@ -992,7 +1240,7 @@
             properties: {
                 alias_display: { type: "STRING" },
                 verification_passed: { type: "BOOLEAN" },
-                document_discrepancy_detected: { type: "BOOLEAN", description: "True si no coinciden los titulares entre Vida Laboral y Nómina o hay incoherencia documental" },
+                document_discrepancy_detected: { type: "BOOLEAN" },
                 fraud_risk_level: { type: "STRING", enum: ["LOW", "MEDIUM", "HIGH"] },
                 csv_detected: { type: "BOOLEAN" },
                 employment_category: { type: "STRING" },
@@ -1033,6 +1281,7 @@
                 switchView('landlord');
             } else {
                 switchView('tenant');
+                showTenantIntroScreen();
             }
         });
 
@@ -1043,6 +1292,19 @@
                 secretClickCounter = 0;
                 document.getElementById('secret-admin-modal').classList.remove('hidden');
             }
+        }
+
+        // Control de sub-pantallas en la pestaña "Crear" (Portada Explicativa vs Formulario)
+        function showTenantIntroScreen() {
+            document.getElementById('tenant-step-intro').classList.remove('hidden');
+            document.getElementById('tenant-step-form').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showTenantFormScreen() {
+            document.getElementById('tenant-step-intro').classList.add('hidden');
+            document.getElementById('tenant-step-form').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // =========================================================================
@@ -1067,18 +1329,19 @@
 
             for (let i = 1; i <= count; i++) {
                 html += `
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-                        <span class="text-sm font-bold text-slate-900">
-                            <i class="fa-solid fa-user-tie text-emerald-600 mr-1.5"></i>Datos y Documentos del Titular ${i}
+                <div class="bg-slate-100 p-4 rounded-2xl border-2 border-slate-300 space-y-3">
+                    <div class="flex justify-between items-center border-b border-slate-300 pb-2">
+                        <span class="text-sm font-extrabold text-slate-900 flex items-center">
+                            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center mr-2">${i}</span>
+                            Documentación del Titular ${i}
                         </span>
-                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-md">Firmante ${i}</span>
+                        <span class="text-xs bg-emerald-100 border border-emerald-300 text-emerald-900 font-extrabold px-2.5 py-0.5 rounded-full">Firmante ${i}</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Categoría Laboral ${i}</label>
-                            <select id="cat-member-${i}" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-slate-800">
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">Categoría Laboral ${i}</label>
+                            <select id="cat-member-${i}" class="w-full bg-white border-2 border-slate-300 rounded-xl p-2.5 text-xs sm:text-sm font-bold text-slate-900">
                                 <option value="Indefinido" ${defaultCategories[i-1]==='Indefinido'?'selected':''}>Contrato Indefinido</option>
                                 <option value="Funcionario / Público" ${defaultCategories[i-1]==='Funcionario / Público'?'selected':''}>Funcionario / Público</option>
                                 <option value="Autónomo Consolidado">Autónomo Consolidado</option>
@@ -1086,23 +1349,23 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Ocupación / Profesión ${i}</label>
-                            <input type="text" id="job-member-${i}" placeholder="Ej: Ingeniero, Docente, Sanitario..." value=""
-                                class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs sm:text-sm font-medium text-slate-900">
+                            <label class="block text-xs font-extrabold text-slate-700 mb-1">Ocupación / Profesión ${i}</label>
+                            <input type="text" id="job-member-${i}" placeholder="Ej: Ingeniero, Docente..." value=""
+                                class="w-full bg-white border-2 border-slate-300 rounded-xl p-2.5 text-xs sm:text-sm font-bold text-slate-900">
                         </div>
                     </div>
 
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">Informe de Vida Laboral - Titular ${i} (PDF Oficial)</label>
+                        <label class="block text-xs font-extrabold text-slate-800">Informe de Vida Laboral - Titular ${i} (PDF)</label>
                         <input type="file" id="file-vl-${i}" accept="application/pdf" onchange="inspectPdfMetadata(this, 'meta-vl-${i}')"
-                            class="block w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 cursor-pointer border border-slate-300 bg-white rounded-xl p-1.5">
-                        <div id="meta-vl-${i}" class="text-xs text-slate-500 pl-1">Escáner forense de metadatos preparado.</div>
+                            class="block w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-extrabold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer border-2 border-slate-300 bg-white rounded-xl p-1.5">
+                        <div id="meta-vl-${i}" class="text-xs text-slate-600 font-medium pl-1">Escáner forense de metadatos preparado.</div>
                     </div>
                     <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">Última Nómina o Certificado de Haberes - Titular ${i} (PDF)</label>
+                        <label class="block text-xs font-extrabold text-slate-800">Última Nómina / Haberes - Titular ${i} (PDF)</label>
                         <input type="file" id="file-nom-${i}" accept="application/pdf" onchange="inspectPdfMetadata(this, 'meta-nom-${i}')"
-                            class="block w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 cursor-pointer border border-slate-300 bg-white rounded-xl p-1.5">
-                        <div id="meta-nom-${i}" class="text-xs text-slate-500 pl-1">Escáner forense de metadatos preparado.</div>
+                            class="block w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-extrabold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer border-2 border-slate-300 bg-white rounded-xl p-1.5">
+                        <div id="meta-nom-${i}" class="text-xs text-slate-600 font-medium pl-1">Escáner forense de metadatos preparado.</div>
                     </div>
                 </div>`;
             }
@@ -1180,7 +1443,7 @@
         }
 
         // =========================================================================
-        // 6. CONEXIÓN SUPABASE (CON SANITIZACIÓN DE DATOS ANTIGUOS)
+        // 6. CONEXIÓN SUPABASE Y NAVEGACIÓN DE ALTO CONTRASTE
         // =========================================================================
         async function verifySupabaseStatusAndLoad() {
             const dot = document.getElementById('conn-dot');
@@ -1195,40 +1458,39 @@
 
                 if (error) throw error;
 
-                dot.className = "w-2 h-2 rounded-full bg-emerald-400 verified-pulse";
-                txt.innerText = "Auditoría Activa";
+                dot.className = "w-2 h-2 rounded-full bg-emerald-600";
+                txt.innerText = "Cloud Activo";
 
                 if (data && data.length > 0) {
-                    // Sanitizar todos los registros cargados de la base de datos por si alguno antiguo tenía un DNI escrito
                     const cleanedData = data.map(d => sanitizeRecordPII(d));
                     const existingIds = new Set(cleanedData.map(d => d.id));
                     const extras = directoryProfiles.filter(p => !existingIds.has(p.id));
                     directoryProfiles = [...cleanedData, ...extras];
                 }
             } catch (e) {
-                dot.className = "w-2 h-2 rounded-full bg-amber-400";
+                dot.className = "w-2 h-2 rounded-full bg-amber-500";
                 txt.innerText = "Modo Local";
             }
         }
 
         function switchView(view) {
-            ['view-landlord', 'view-tenant', 'view-directory', 'view-inbox'].forEach(id => {
+            ['view-landlord', 'view-tenant', 'view-directory', 'view-inbox', 'view-landlord-actions'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
 
-            const inactiveBtn = "py-2 px-1.5 rounded-lg text-slate-300 hover:text-white font-semibold transition text-xs text-center";
-            const activeTenant = "py-2 px-1.5 rounded-lg bg-emerald-600 text-white font-bold transition text-xs text-center shadow";
-            const activeCenterPassport = "w-full py-2 px-2 rounded-lg bg-amber-400 text-slate-950 font-black transition text-xs text-center flex items-center justify-center space-x-1.5 shadow";
-            const inactiveCenterPassport = "w-full py-2 px-2 rounded-lg text-slate-200 hover:text-white font-bold transition text-xs text-center flex items-center justify-center space-x-1.5";
-            const activeLandlord = "w-full py-2 px-1.5 rounded-lg bg-indigo-600 text-white font-bold transition text-xs text-center shadow";
+            const activeBtn = "py-2 px-1.5 rounded-lg bg-slate-900 text-white font-extrabold transition text-xs text-center shadow";
+            const inactiveBtn = "py-2 px-1.5 rounded-lg bg-white/80 text-slate-800 hover:bg-white font-bold transition text-xs text-center border border-slate-300/80";
+            const activeCenter = "w-full py-2 px-2 rounded-lg bg-indigo-700 text-white font-extrabold transition text-xs text-center flex items-center justify-center space-x-1 shadow";
+            const inactiveCenter = "w-full py-2 px-2 rounded-lg bg-white/90 text-indigo-950 hover:bg-white font-extrabold transition text-xs text-center flex items-center justify-center space-x-1 border border-indigo-300";
 
-            document.getElementById('btn-tenant').className = view === 'tenant' ? activeTenant : inactiveBtn;
-            document.getElementById('btn-inbox').className = view === 'inbox' ? activeTenant : inactiveBtn;
-            document.getElementById('btn-landlord').className = view === 'landlord' ? activeCenterPassport : inactiveCenterPassport;
-            document.getElementById('btn-directory').className = view === 'directory' ? activeLandlord : "w-full " + inactiveBtn;
+            document.getElementById('btn-tenant').className = view === 'tenant' ? activeBtn : inactiveBtn;
+            document.getElementById('btn-inbox').className = view === 'inbox' ? activeBtn : inactiveBtn;
+            document.getElementById('btn-landlord').className = (view === 'landlord' || view === 'landlord-actions') ? activeCenter : inactiveCenter;
+            document.getElementById('btn-directory').className = view === 'directory' ? "w-full " + activeBtn : "w-full " + inactiveBtn;
 
             document.getElementById(`view-${view}`).classList.remove('hidden');
             if (view === 'directory') renderDirectoryList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // =========================================================================
@@ -1253,11 +1515,11 @@
             document.getElementById('upgrade-cta-bar').classList.add('hidden');
 
             const badgeTop = document.getElementById('plan-badge-top');
-            badgeTop.className = "text-xs font-black uppercase tracking-wide bg-amber-400 text-slate-950 px-3 py-1 rounded-full";
-            badgeTop.innerHTML = `<i class="fa-solid fa-crown mr-1.5"></i>PASAPORTE PRO ACTIVO (GRATIS por tiempo limitado)`;
+            badgeTop.className = "text-xs font-extrabold uppercase tracking-wide bg-emerald-100 border border-emerald-300 text-emerald-950 px-3 py-1 rounded-full";
+            badgeTop.innerHTML = `<i class="fa-solid fa-crown text-amber-500 mr-1.5"></i>PASAPORTE PRO ACTIVO (Gratis por tiempo limitado)`;
 
             if (!silent) {
-                alert("🎉 ¡Versión PRO Activada GRATIS!\n\nYa puedes copiar el enlace a tu pasaporte, compartirlo por WhatsApp, descargar el PDF y recibir ofertas de propietarios.");
+                alert("🎉 ¡Versión PRO Activada GRATIS!\n\nYa puedes copiar el enlace a tu pasaporte, compartirlo por WhatsApp, imprimir en 1 cara A4 y recibir ofertas de propietarios.");
             }
         }
 
@@ -1286,12 +1548,12 @@
             document.getElementById('upgrade-cta-bar').classList.remove('hidden');
 
             const badgeTop = document.getElementById('plan-badge-top');
-            badgeTop.className = "text-xs font-bold uppercase tracking-wide bg-slate-800 text-amber-300 border border-amber-400/40 px-3 py-1 rounded-full";
+            badgeTop.className = "text-xs font-extrabold uppercase tracking-wide bg-amber-100 border border-amber-300 text-amber-950 px-3 py-1 rounded-full";
             badgeTop.innerHTML = `<i class="fa-solid fa-lock mr-1.5"></i>Versión Gratuita`;
         }
 
         // =========================================================================
-        // 8. AUDITORÍA MULTI-TITULAR CON CONTROL ESTRICTO DE DISCREPANCIAS Y SIN DNI
+        // 8. AUDITORÍA MULTI-TITULAR CON CONTROL ESTRICTO DE DISCREPANCIAS
         // =========================================================================
         function generateShortId() {
             const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -1316,7 +1578,7 @@
                     log.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>Alerta: PDF modificado con software de edición (${producer || creator}).`;
                 } else {
                     pdfTamperingDetected = false;
-                    log.className = "text-xs font-semibold text-emerald-700 pl-1";
+                    log.className = "text-xs font-bold text-emerald-800 pl-1";
                     log.innerHTML = `<i class="fa-solid fa-shield-check mr-1"></i>Metadatos originales verificados.`;
                 }
             } catch (e) {
@@ -1338,10 +1600,11 @@
             document.getElementById('log-2').classList.add('hidden');
             document.getElementById('log-3').classList.add('hidden');
             document.getElementById('log-spinner').className = "fa-solid fa-spinner fa-spin mr-2";
-            document.getElementById('log-1-text').innerText = "Procesando documentos en memoria RAM...";
+            document.getElementById('log-1-text').innerText = "Analizando documentos en memoria RAM...";
 
             document.getElementById('tenant-phone-input').value = "";
             renderDynamicApplicantsInputs();
+            showTenantIntroScreen();
         }
 
         async function runFullAuditAndSave() {
@@ -1395,7 +1658,7 @@
             document.getElementById('log-spinner').className = "fa-solid fa-spinner fa-spin mr-2";
             document.getElementById('log-1-text').innerText = "Verificando coherencia documental y filtrando datos sensibles...";
             document.getElementById('log-2').classList.remove('hidden');
-            document.getElementById('log-2').innerText = `Auditando ${numApplicants} titular(es) con motor forense v13...`;
+            document.getElementById('log-2').innerText = `Auditando ${numApplicants} titular(es) con motor forense v15...`;
 
             let auditData = null;
             const newId = generateShortId();
@@ -1471,9 +1734,6 @@
                 };
             }
 
-            // =====================================================================
-            // REGLA DURA DE PENALIZACIÓN POR DISCREPANCIAS O MANIPULACIÓN DE PDF
-            // =====================================================================
             let finalScore = Number(auditData.solvency_score) || 85;
             const notesLower = (auditData.auditor_notes || "").toLowerCase();
             const textIndicatesDiscrepancy = notesLower.includes("no coincid") || 
@@ -1489,11 +1749,9 @@
                                    textIndicatesDiscrepancy;
 
             if (hasDiscrepancy) {
-                // Si los documentos no coinciden o hay alerta, el Score NUNCA puede superar 35/100
                 finalScore = Math.min(finalScore, 35);
             }
 
-            // Sanitización estricta contra DNIs/NIEs en todos los textos devueltos por la IA
             const cleanAlias = sanitizePII(auditData.alias_display || "Candidato Auditado");
             const cleanNotes = sanitizePII(auditData.auditor_notes || "Auditoría documental completada.");
             const finalMembersBreakdown = (auditData.members_breakdown && auditData.members_breakdown.length > 0)
@@ -1529,7 +1787,6 @@
                 currentTenantPhone = tenantPhone;
             }
 
-            // Solo añadir al catálogo público si no tiene discrepancias graves (o añadirlo con su score real bajo)
             directoryProfiles.unshift(recordToSave);
             if (sbClient) {
                 await sbClient.from('passports').insert([{
@@ -1564,12 +1821,11 @@
                 btnSubmit.classList.remove('opacity-60');
                 resetTenantFormAndConsole();
                 switchView('landlord');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 800);
         }
 
         // =========================================================================
-        // 9. CATÁLOGO DE PROPIETARIOS (DISEÑO MÁS PROFESIONAL Y TEXTO MAYOR)
+        // 9. CATÁLOGO DE PROPIETARIOS
         // =========================================================================
         function renderDirectoryList() {
             const zoneQuery = (document.getElementById('filter-zone').value || "").toLowerCase();
@@ -1595,7 +1851,7 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-sm text-slate-500 border border-slate-200">No hay candidatos con esos filtros exactos. Prueba a ampliar el Nº de titulares o categoría.</div>`;
+                container.innerHTML = `<div class="pwa-card p-6 text-center text-sm text-slate-600 font-medium">No hay candidatos con esos filtros exactos. Prueba a ampliar el Nº de titulares o categoría.</div>`;
                 return;
             }
 
@@ -1604,55 +1860,50 @@
                 const meta = unpackCategoryMeta(cleanP.employment_category);
                 const initials = (cleanP.alias_display || "CV").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
                 const isLowScore = cleanP.solvency_score < 60;
-                
-                const scoreBadgeClass = isLowScore
-                    ? "bg-rose-100 text-rose-800 border border-rose-200"
-                    : "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                const ringColor = isLowScore ? "#e11d48" : "#10b981";
+                const dashOffset = 138 - (138 * (cleanP.solvency_score / 100));
 
                 const membersBadgesHtml = meta.membersList.map(m => `
-                    <div class="flex items-start space-x-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-slate-700">
-                        <i class="fa-solid ${isLowScore ? 'fa-triangle-exclamation text-rose-500' : 'fa-user-check text-emerald-600'} mt-0.5 text-xs"></i>
-                        <span class="font-semibold leading-snug">${sanitizePII(m)}</span>
+                    <div class="flex items-start space-x-2 text-xs sm:text-sm bg-slate-100 border border-slate-300 px-3.5 py-2 rounded-2xl text-slate-800">
+                        <i class="fa-solid ${isLowScore ? 'fa-triangle-exclamation text-rose-600' : 'fa-circle-check text-emerald-600'} mt-0.5 text-xs"></i>
+                        <span class="font-bold leading-snug">${sanitizePII(m)}</span>
                     </div>
                 `).join('');
 
                 return `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:border-indigo-500 transition cursor-pointer" onclick='openProfileFromCatalog(${JSON.stringify(cleanP).replace(/'/g, "&apos;")})'>
-                    <div class="flex justify-between items-start gap-2">
-                        <div class="flex items-start space-x-3.5">
-                            <div class="w-12 h-12 rounded-xl ${isLowScore ? 'bg-rose-50 border-rose-300 text-rose-800' : 'bg-emerald-50 border-emerald-300 text-emerald-800'} border flex items-center justify-center font-black text-base shrink-0">
+                <div class="pwa-card p-5 hover:border-indigo-500 transition cursor-pointer" onclick='openProfileFromCatalog(${JSON.stringify(cleanP).replace(/'/g, "&apos;")})'>
+                    <div class="flex justify-between items-center gap-3">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm">
                                 ${initials}
                             </div>
                             <div>
-                                <div class="flex flex-wrap items-center gap-1.5">
-                                    <h4 class="font-extrabold text-base text-slate-900">${cleanP.alias_display}</h4>
-                                    <span class="${scoreBadgeClass} text-xs font-extrabold px-2.5 py-0.5 rounded-full">
-                                        Scoring ${cleanP.solvency_score}/100
+                                <h4 class="font-extrabold text-base text-slate-900">${cleanP.alias_display}</h4>
+                                <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                                    <span class="bg-indigo-100 border border-indigo-200 text-indigo-900 text-xs font-extrabold px-2.5 py-0.5 rounded-full">
+                                        ${meta.numApplicants} ${meta.numApplicants === 1 ? 'Titular' : 'Titulares'} (${meta.relationship})
                                     </span>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-2 mt-1.5">
-                                    <span class="bg-indigo-50 text-indigo-800 border border-indigo-200 text-xs font-bold px-2.5 py-0.5 rounded-md">
-                                        <i class="fa-solid fa-users mr-1"></i>${meta.numApplicants} ${meta.numApplicants === 1 ? 'Titular' : 'Titulares'} (${meta.relationship})
-                                    </span>
-                                    <span class="text-xs text-slate-600 font-medium"><i class="fa-solid fa-location-dot text-indigo-600 mr-1"></i>${cleanP.search_zone}</span>
+                                    <span class="text-xs text-slate-600 font-bold"><i class="fa-solid fa-location-dot text-indigo-600 mr-1"></i>${cleanP.search_zone}</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-right shrink-0">
-                            <span class="block text-[10px] font-bold uppercase text-slate-400">Alquiler Máx</span>
-                            <span class="text-xs sm:text-sm font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 inline-block mt-0.5">
-                                ${cleanP.max_safe_rent_35pct} €/mes
-                            </span>
+
+                        <div class="relative w-14 h-14 flex items-center justify-center shrink-0">
+                            <svg class="w-14 h-14" viewBox="0 0 56 56">
+                                <circle cx="28" cy="28" r="22" stroke="#cbd5e1" stroke-width="4.5" fill="transparent"></circle>
+                                <circle class="progress-ring-circle" cx="28" cy="28" r="22" stroke="${ringColor}" stroke-width="4.5" stroke-linecap="round" fill="transparent" stroke-dasharray="138" stroke-dashoffset="${dashOffset}"></circle>
+                            </svg>
+                            <span class="absolute text-xs font-black text-slate-900">${cleanP.solvency_score}</span>
                         </div>
                     </div>
 
-                    <div class="mt-3.5 space-y-2">
+                    <div class="mt-3.5 space-y-1.5">
                         ${membersBadgesHtml}
                     </div>
 
-                    <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex justify-between items-center text-xs sm:text-sm">
-                        <span class="text-slate-600">Ingreso neto conjunto: <strong class="text-slate-900">${cleanP.net_income_bracket_display}</strong></span>
-                        <span class="text-indigo-600 font-bold shrink-0">Ver Pasaporte <i class="fa-solid fa-chevron-right ml-1 text-xs"></i></span>
+                    <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-slate-600 font-semibold">Techo seguro: <strong class="text-emerald-800 font-extrabold">Hasta ${cleanP.max_safe_rent_35pct} €/mes</strong></span>
+                        <span class="text-indigo-700 font-extrabold flex items-center">Abrir Pasaporte <i class="fa-solid fa-chevron-right ml-1.5 text-xs"></i></span>
                     </div>
                 </div>`;
             }).join('');
@@ -1663,7 +1914,6 @@
             renderPassportUI(profileObj);
             activateProDirectly(true);
             switchView('landlord');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // =========================================================================
@@ -1727,7 +1977,7 @@
                 return;
             }
 
-            container.innerHTML = `<div class="text-sm text-slate-500 text-center py-4"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Consultando Buzón Privado...</div>`;
+            container.innerHTML = `<div class="text-sm text-slate-600 text-center py-4 font-semibold"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Consultando Buzón Privado...</div>`;
 
             const { data, error } = await sbClient
                 .from('contact_requests')
@@ -1736,7 +1986,7 @@
                 .order('created_at', { ascending: false });
 
             if (error || !data || data.length === 0) {
-                container.innerHTML = `<div class="text-sm text-slate-500 text-center py-6 bg-slate-50 rounded-xl border border-slate-200">No hay ofertas registradas todavía para el Pasaporte <strong>#${rawId}</strong>.</div>`;
+                container.innerHTML = `<div class="text-sm text-slate-600 text-center py-6 bg-slate-100 rounded-2xl border border-slate-300 font-medium">No hay ofertas registradas todavía para el Pasaporte <strong>#${rawId}</strong>.</div>`;
                 return;
             }
 
@@ -1744,19 +1994,19 @@
             container.innerHTML = data.map(req => {
                 const passLink = `${baseUrl}?id=${rawId}`;
                 return `
-                <div class="bg-slate-900 border border-slate-800 text-white p-4 rounded-xl space-y-2.5 shadow-sm">
+                <div class="bg-slate-900 text-white p-5 rounded-2xl space-y-2.5 shadow-sm">
                     <div class="flex justify-between items-start">
                         <div>
-                            <span class="text-xs bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded uppercase">Oferta de Propietario</span>
-                            <h4 class="font-bold text-base mt-1">${req.landlord_name}</h4>
+                            <span class="text-xs bg-emerald-400 text-slate-950 font-black px-2.5 py-0.5 rounded-full uppercase">Oferta de Propietario</span>
+                            <h4 class="font-bold text-base mt-1.5">${req.landlord_name}</h4>
                         </div>
                         <span class="text-xs text-slate-400 font-mono">#${req.passport_id}</span>
                     </div>
                     <p class="text-xs sm:text-sm text-emerald-300 leading-relaxed break-words">${req.property_zone_and_price}</p>
-                    <div class="pt-2 border-t border-slate-800 flex justify-end">
+                    <div class="pt-2.5 border-t border-slate-800 flex justify-end">
                         <a href="https://wa.me/34${req.landlord_phone.replace(/\s+/g, '')}?text=${encodeURIComponent(`Hola ${req.landlord_name}, hemos revisado en nuestro Buzón Privado de InquiCheck tu oferta (${req.property_zone_and_price}). Aquí tienes el enlace directo a nuestro Pasaporte de Solvencia (#${rawId}): ${passLink} . Te contactamos para avanzar y compartir la documentación.`)}" 
                            target="_blank"
-                           class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition flex items-center">
+                           class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full transition flex items-center">
                             <i class="fa-brands fa-whatsapp text-base mr-1.5"></i>Responder por WhatsApp
                         </a>
                     </div>
@@ -1765,7 +2015,7 @@
         }
 
         // =========================================================================
-        // 11. RENDERIZADO DEL CERTIFICADO (CON DETECCIÓN VISUAL DE DISCREPANCIAS)
+        // 11. RENDERIZADO DEL CERTIFICADO Y PANTALLA DE ACCIONES DEL PROPIETARIO
         // =========================================================================
         async function loadPassportById(id) {
             const cleanId = id.replace('#', '');
@@ -1791,7 +2041,6 @@
             const meta = unpackCategoryMeta(data.employment_category);
             const initials = data.is_example ? "EJ" : (data.alias_display || "JM").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
 
-            // Detectar si el pasaporte tiene discrepancias o un score bajo (< 60)
             const notesLower = (data.auditor_notes || "").toLowerCase();
             const isDiscrepant = Boolean(data.has_discrepancy) || 
                                  data.solvency_score < 60 || 
@@ -1800,13 +2049,9 @@
 
             const exampleBanner = document.getElementById('example-warning-banner');
             const headerBox = document.getElementById('cert-header-box');
-            const headerPillBox = document.getElementById('ui-header-pill-box');
-            const headerDot = document.getElementById('ui-header-dot');
             const headerPillText = document.getElementById('ui-header-pill-text');
-            const scoreBox = document.getElementById('ui-score-box');
-            const scoreLabel = document.getElementById('ui-score-label');
             const scoreEl = document.getElementById('ui-score');
-            const auditorBox = document.getElementById('ui-auditor-box');
+            const ringCircle = document.getElementById('score-ring-circle');
 
             if (data.is_example) {
                 exampleBanner.classList.remove('hidden');
@@ -1814,52 +2059,47 @@
                 exampleBanner.classList.add('hidden');
             }
 
+            const circumference = 213.6;
+            const scoreVal = Math.max(0, Math.min(100, Number(data.solvency_score) || 0));
+            const offset = circumference - (scoreVal / 100) * circumference;
+            ringCircle.style.strokeDashoffset = offset;
+
             if (isDiscrepant && !data.is_example) {
-                // Diseño de Alerta Roja/Ámbar cuando los documentos no coinciden
-                headerBox.className = "bg-rose-950 text-white rounded-t-2xl p-5 sm:p-6 relative overflow-hidden shadow-md transition-colors";
-                headerPillBox.className = "inline-flex items-center space-x-2 bg-rose-800/90 border border-rose-400/50 px-3 py-1 rounded-full text-xs font-bold text-rose-100 mb-2.5";
-                headerDot.className = "w-2 h-2 rounded-full bg-rose-400";
+                headerBox.className = "bg-rose-950 text-white px-5 py-3.5 flex justify-between items-center border-b-2 border-rose-500";
+                headerPillText.className = "text-xs font-extrabold uppercase tracking-wider text-rose-200";
                 headerPillText.innerText = "ALERTA: DISCREPANCIA DOCUMENTAL DETECTADA";
-
-                scoreBox.className = "text-right bg-rose-50 px-4 py-2.5 rounded-2xl border border-rose-300 shrink-0";
-                scoreLabel.className = "block text-[11px] font-bold uppercase text-rose-800";
-                scoreLabel.innerText = "Riesgo Alto";
-                scoreEl.className = "text-3xl font-black text-rose-600";
-                auditorBox.className = "bg-rose-50/70 border-l-4 border-rose-600 p-4 rounded-r-xl text-xs sm:text-sm text-rose-950 leading-relaxed";
+                ringCircle.setAttribute('stroke', '#e11d48');
             } else {
-                // Diseño Verde Verificado cuando todo es coherente
-                headerBox.className = "bg-emerald-950 text-white rounded-t-2xl p-5 sm:p-6 relative overflow-hidden shadow-md transition-colors";
-                headerPillBox.className = "inline-flex items-center space-x-2 bg-emerald-800/80 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-semibold text-emerald-200 mb-2.5";
-                headerDot.className = "w-2 h-2 rounded-full bg-emerald-400 verified-pulse";
-                headerPillText.innerText = data.is_example ? "EJEMPLO DE AUDITORÍA IA + CSV" : "AUDITORÍA IA + CSV SUPERADA";
-
-                scoreBox.className = "text-right bg-emerald-50 px-4 py-2.5 rounded-2xl border border-emerald-200 shrink-0";
-                scoreLabel.className = "block text-[11px] font-bold uppercase text-emerald-800";
-                scoreLabel.innerText = "Scoring";
-                scoreEl.className = "text-3xl font-black text-emerald-600";
-                auditorBox.className = "bg-slate-50 border-l-4 border-emerald-600 p-4 rounded-r-xl text-xs sm:text-sm text-slate-700 leading-relaxed";
+                headerBox.className = "bg-slate-900 text-white px-5 py-3.5 flex justify-between items-center border-b-2 border-emerald-500";
+                headerPillText.className = "text-xs font-extrabold uppercase tracking-wider text-emerald-300";
+                headerPillText.innerText = data.is_example ? "EJEMPLO DE PASAPORTE • AUDITORÍA IA + CSV" : "PASAPORTE OFICIAL • AUDITORÍA IA + CSV SUPERADA";
+                ringCircle.setAttribute('stroke', scoreVal >= 80 ? '#10b981' : '#f59e0b');
             }
 
             document.getElementById('ui-cert-id').innerText = `#${data.id}`;
             document.getElementById('ui-initials').innerText = initials;
             document.getElementById('ui-alias').innerText = data.alias_display;
-            document.getElementById('ui-applicants-badge').innerHTML = `<i class="fa-solid fa-users mr-1"></i>${meta.numApplicants} ${meta.numApplicants === 1 ? 'Titular Firmante' : 'Titulares Firmantes'}`;
+            document.getElementById('ui-applicants-badge').innerText = `${meta.numApplicants} ${meta.numApplicants === 1 ? 'Titular' : 'Titulares'}`;
             document.getElementById('ui-relationship-badge').innerText = meta.relationship;
-            document.getElementById('ui-zone').innerHTML = `<i class="fa-solid fa-location-dot mr-1 text-emerald-600"></i>Busca en: ${data.search_zone}`;
-            scoreEl.innerText = data.solvency_score;
+            document.getElementById('ui-zone').innerHTML = `<i class="fa-solid fa-location-dot mr-1 text-indigo-600"></i>Zona solicitada: ${data.search_zone}`;
+            scoreEl.innerText = scoreVal;
             document.getElementById('ui-auditor-notes').innerText = data.auditor_notes;
             document.getElementById('ui-category').innerText = meta.cleanCategory;
-            document.getElementById('ui-ct-code').innerText = `Códigos TGSS: ${data.contract_code_tgss || '100'}`;
-            document.getElementById('ui-seniority').innerText = `Antigüedad máx: ${data.seniority_years} años`;
+            document.getElementById('ui-ct-code').innerText = `TGSS: ${data.contract_code_tgss || '100'}`;
+            document.getElementById('ui-seniority').innerText = `Antigüedad: ${data.seniority_years} años`;
             document.getElementById('ui-income-bracket').innerText = data.net_income_bracket_display;
             document.getElementById('ui-garnishment').innerText = data.has_wage_garnishment ? "Con Embargo" : "0 Embargos";
             document.getElementById('ui-max-rent').innerText = `Hasta ${data.max_safe_rent_35pct} €/mes`;
 
+            // Sincronizar también los textos en la pantalla independiente de acciones del propietario
+            document.getElementById('action-screen-tenant-alias').innerText = data.alias_display;
+            document.getElementById('action-screen-passport-id').innerText = `#${data.id}`;
+
             const breakdownContainer = document.getElementById('ui-members-breakdown');
             breakdownContainer.innerHTML = meta.membersList.map(item => `
-                <div class="flex items-center space-x-2.5 bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm">
+                <div class="flex items-center space-x-2.5 bg-white px-3 py-2 rounded-xl border border-slate-300 text-xs">
                     <i class="fa-solid ${isDiscrepant && !data.is_example ? 'fa-circle-exclamation text-rose-600' : 'fa-circle-check text-emerald-600'} shrink-0"></i>
-                    <span class="font-bold text-slate-800">${sanitizePII(item)}</span>
+                    <span class="font-bold text-slate-900">${sanitizePII(item)}</span>
                 </div>
             `).join('');
 
@@ -1893,7 +2133,7 @@
             if (!currentVerifiedIncome || currentVerifiedIncome <= 0) {
                 resultEl.innerText = "No Verificado";
                 resultEl.className = "text-base sm:text-lg font-black text-rose-400";
-                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-rose-950/90 border border-rose-600/50 text-rose-200 p-3 rounded-xl flex items-center";
+                badgeEl.className = "text-xs bg-rose-950/90 border border-rose-600/50 text-rose-200 p-3 rounded-2xl flex items-center";
                 badgeEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-base mr-2.5 text-rose-400"></i><span><strong>INGRESOS NO VERIFICADOS:</strong> Existen discrepancias en los documentos aportados.</span>';
                 return;
             }
@@ -1903,17 +2143,17 @@
             if (effort <= 30) {
                 resultEl.innerText = effort + "% (Óptimo)";
                 resultEl.className = "text-base sm:text-lg font-black text-emerald-400";
-                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-emerald-950/90 border border-emerald-600/50 text-emerald-200 p-3 rounded-xl flex items-center";
+                badgeEl.className = "text-xs bg-emerald-950/90 border border-emerald-600/50 text-emerald-200 p-3 rounded-2xl flex items-center";
                 badgeEl.innerHTML = '<i class="fa-solid fa-check-double text-base mr-2.5 text-emerald-400"></i><span><strong>APTO PARA SEGURO DE IMPAGO:</strong> Cumple holgadamente el requisito (menor al 35%).</span>';
             } else if (effort <= 35) {
                 resultEl.innerText = effort + "% (Viable)";
                 resultEl.className = "text-base sm:text-lg font-black text-amber-400";
-                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-amber-950/90 border border-amber-600/50 text-amber-200 p-3 rounded-xl flex items-center";
+                badgeEl.className = "text-xs bg-amber-950/90 border border-amber-600/50 text-amber-200 p-3 rounded-2xl flex items-center";
                 badgeEl.innerHTML = '<i class="fa-solid fa-circle-check text-base mr-2.5 text-amber-400"></i><span><strong>DENTRO DE LÍMITE:</strong> Aceptado por aseguradoras (máx. 35%).</span>';
             } else {
                 resultEl.innerText = effort + "% (Excesivo)";
                 resultEl.className = "text-base sm:text-lg font-black text-rose-400";
-                badgeEl.className = "mt-3.5 text-xs sm:text-sm bg-rose-950/90 border border-rose-600/50 text-rose-200 p-3 rounded-xl flex items-center";
+                badgeEl.className = "text-xs bg-rose-950/90 border border-rose-600/50 text-rose-200 p-3 rounded-2xl flex items-center";
                 badgeEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-base mr-2.5 text-rose-400"></i><span><strong>RIESGO ALTO:</strong> Supera el 35% de los ingresos netos conjuntos.</span>';
             }
         }
