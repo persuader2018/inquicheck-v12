@@ -258,7 +258,7 @@
                         <div class="text-xs sm:text-sm">
                             <span class="font-extrabold text-emerald-950 block text-sm">Protocolo de Custodia Cero y Ocultación de DNI</span>
                             <p class="text-xs text-emerald-900 mt-1 leading-relaxed font-medium">
-                                Tus PDFs <strong>no se almacenan en ningún servidor</strong>. Se analizan en memoria RAM volátil durante 5 segundos y se destruyen automáticamente. Nuestro cortafuegos bloquea cualquier publicación de tu DNI, NIE o cuenta bancaria. <span class="underline font-extrabold">Ver certificado legal →</span>
+                                Tus PDFs <strong>no se almacenan en ningún servidor</strong>. Se analizan mediante IA (Google Gemini) en memoria RAM volátil durante 5 segundos y se destruyen automáticamente. Nuestro cortafuegos bloquea cualquier publicación de tu DNI, NIE o cuenta bancaria. <span class="underline font-extrabold">Ver certificado legal →</span>
                             </p>
                         </div>
                     </div>
@@ -284,7 +284,7 @@
                         <div class="bg-indigo-50/90 border border-indigo-200 p-3.5 rounded-2xl flex items-start space-x-3">
                             <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-xs mt-0.5">3</div>
                             <div>
-                                <h3 class="text-sm font-extrabold text-slate-900">Validación Forense de Vida Laboral (CSV) y Nómina</h3>
+                                <h3 class="text-sm font-extrabold text-slate-900">Validación IA de Vida Laboral (CSV) y Nómina</h3>
                                 <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">Obtén tu Scoring de 0 a 100 y entra en el catálogo donde los propietarios buscan inquilinos sin publicar su piso.</p>
                             </div>
                         </div>
@@ -1215,7 +1215,7 @@
             }
         ];
 
-        const SYSTEM_PROMPT_MULTI_AUDITOR = `Eres un Auditor Forense de Riesgo Financiero e Inmobiliario en España sujeto al RGPD (Art. 5.1.c).
+        const SYSTEM_PROMPT_MULTI_AUDITOR = `Eres un Auditor mediante IA de Riesgo Financiero e Inmobiliario en España sujeto al RGPD (Art. 5.1.c).
         Analiza los documentos PDF aportados para los titulares firmantes y devuelve EXCLUSIVAMENTE un objeto JSON.
 
         REGLAS LEGALES Y DE AUDITORÍA OBLIGATORIAS:
@@ -1359,7 +1359,7 @@
                         <label class="block text-xs font-extrabold text-slate-800">Informe de Vida Laboral - Titular ${i} (PDF)</label>
                         <input type="file" id="file-vl-${i}" accept="application/pdf" onchange="inspectPdfMetadata(this, 'meta-vl-${i}')"
                             class="block w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-extrabold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer border-2 border-slate-300 bg-white rounded-xl p-1.5">
-                        <div id="meta-vl-${i}" class="text-xs text-slate-600 font-medium pl-1">Escáner forense de metadatos preparado.</div>
+                        <div id="meta-vl-${i}" class="text-xs text-slate-600 font-medium pl-1">Escáner IA de metadatos preparado.</div>
                     </div>
                     <div class="space-y-1">
                         <label class="block text-xs font-extrabold text-slate-800">Última Nómina / Haberes - Titular ${i} (PDF)</label>
