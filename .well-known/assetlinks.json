@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "app.vercel.inquicheck",
-        "sha256_cert_fingerprints": ["90:93:76:D7:08:DA:DF:94:ED:C4:DE:E7:31:3D:CB:CE:03:D3:ED:61:BD:7D:80:FA:D8:13:6F:6A:36:C8:D3:0B"]
+        "sha256_cert_fingerprints": ["2C:77:46:99:BC:DF:61:BF:59:00:E7:27:82:D6:9E:54:48:7E:4F:51:40:0B:02:28:C4:8E:DB:6F:BC:D8:E2:F6"]
       }
     }]
